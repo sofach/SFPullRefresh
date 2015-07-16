@@ -1,0 +1,532 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A444D281CEF91F66137857AC /* libPods-SFPullRefresh.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89BA41F42BFC2C6CAB7C9AB8 /* libPods-SFPullRefresh.a */; };
+		AD01A95E1B550D420034F8EA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A95D1B550D420034F8EA /* main.m */; };
+		AD01A9611B550D420034F8EA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9601B550D420034F8EA /* AppDelegate.m */; };
+		AD01A9641B550D420034F8EA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9631B550D420034F8EA /* ViewController.m */; };
+		AD01A9671B550D420034F8EA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD01A9651B550D420034F8EA /* Main.storyboard */; };
+		AD01A9691B550D420034F8EA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD01A9681B550D420034F8EA /* Images.xcassets */; };
+		AD01A96C1B550D420034F8EA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD01A96A1B550D420034F8EA /* LaunchScreen.xib */; };
+		AD01A9781B550D420034F8EA /* SFPullRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9771B550D420034F8EA /* SFPullRefreshTests.m */; };
+		AD01A9851B550DA70034F8EA /* TopLoadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9821B550DA70034F8EA /* TopLoadViewController.m */; };
+		AD01A9861B550DA70034F8EA /* TopRefreshViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9841B550DA70034F8EA /* TopRefreshViewController.m */; };
+		AD01A9961B5510900034F8EA /* UIScrollView+SFPullRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */; };
+		AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A41B5550650034F8EA /* SFRefreshControl.m */; };
+		AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AD01A9721B550D420034F8EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD01A9501B550D420034F8EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AD01A9571B550D420034F8EA;
+			remoteInfo = SFPullRefresh;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0DB608BF99A249A94EF7236F /* Pods-SFPullRefresh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SFPullRefresh.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SFPullRefresh/Pods-SFPullRefresh.debug.xcconfig"; sourceTree = "<group>"; };
+		331B6C408C389E165ECD3941 /* Pods-SFPullRefresh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SFPullRefresh.release.xcconfig"; path = "Pods/Target Support Files/Pods-SFPullRefresh/Pods-SFPullRefresh.release.xcconfig"; sourceTree = "<group>"; };
+		89BA41F42BFC2C6CAB7C9AB8 /* libPods-SFPullRefresh.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SFPullRefresh.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD01A9581B550D420034F8EA /* SFPullRefresh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SFPullRefresh.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD01A95C1B550D420034F8EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AD01A95D1B550D420034F8EA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AD01A95F1B550D420034F8EA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		AD01A9601B550D420034F8EA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		AD01A9621B550D420034F8EA /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		AD01A9631B550D420034F8EA /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		AD01A9661B550D420034F8EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		AD01A9681B550D420034F8EA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		AD01A96B1B550D420034F8EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		AD01A9711B550D420034F8EA /* SFPullRefreshTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SFPullRefreshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD01A9761B550D420034F8EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AD01A9771B550D420034F8EA /* SFPullRefreshTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SFPullRefreshTests.m; sourceTree = "<group>"; };
+		AD01A9811B550DA70034F8EA /* TopLoadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopLoadViewController.h; sourceTree = "<group>"; };
+		AD01A9821B550DA70034F8EA /* TopLoadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopLoadViewController.m; sourceTree = "<group>"; };
+		AD01A9831B550DA70034F8EA /* TopRefreshViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopRefreshViewController.h; sourceTree = "<group>"; };
+		AD01A9841B550DA70034F8EA /* TopRefreshViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopRefreshViewController.m; sourceTree = "<group>"; };
+		AD01A9941B5510900034F8EA /* UIScrollView+SFPullRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SFPullRefresh.h"; sourceTree = "<group>"; };
+		AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SFPullRefresh.m"; sourceTree = "<group>"; };
+		AD01A9A31B5550650034F8EA /* SFRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFRefreshControl.h; sourceTree = "<group>"; };
+		AD01A9A41B5550650034F8EA /* SFRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFRefreshControl.m; sourceTree = "<group>"; };
+		AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFLoadMoreControl.h; sourceTree = "<group>"; };
+		AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFLoadMoreControl.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AD01A9551B550D420034F8EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A444D281CEF91F66137857AC /* libPods-SFPullRefresh.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD01A96E1B550D420034F8EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		50513D2306DEC13A6E2E1125 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0DB608BF99A249A94EF7236F /* Pods-SFPullRefresh.debug.xcconfig */,
+				331B6C408C389E165ECD3941 /* Pods-SFPullRefresh.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		A63FA69C5F78F3E133AC8F8F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				89BA41F42BFC2C6CAB7C9AB8 /* libPods-SFPullRefresh.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AD01A94F1B550D420034F8EA = {
+			isa = PBXGroup;
+			children = (
+				AD01A95A1B550D420034F8EA /* SFPullRefresh */,
+				AD01A9741B550D420034F8EA /* SFPullRefreshTests */,
+				AD01A9591B550D420034F8EA /* Products */,
+				50513D2306DEC13A6E2E1125 /* Pods */,
+				A63FA69C5F78F3E133AC8F8F /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		AD01A9591B550D420034F8EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AD01A9581B550D420034F8EA /* SFPullRefresh.app */,
+				AD01A9711B550D420034F8EA /* SFPullRefreshTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AD01A95A1B550D420034F8EA /* SFPullRefresh */ = {
+			isa = PBXGroup;
+			children = (
+				AD01A9871B550DC10034F8EA /* lib */,
+				AD01A9811B550DA70034F8EA /* TopLoadViewController.h */,
+				AD01A9821B550DA70034F8EA /* TopLoadViewController.m */,
+				AD01A9831B550DA70034F8EA /* TopRefreshViewController.h */,
+				AD01A9841B550DA70034F8EA /* TopRefreshViewController.m */,
+				AD01A95F1B550D420034F8EA /* AppDelegate.h */,
+				AD01A9601B550D420034F8EA /* AppDelegate.m */,
+				AD01A9621B550D420034F8EA /* ViewController.h */,
+				AD01A9631B550D420034F8EA /* ViewController.m */,
+				AD01A9651B550D420034F8EA /* Main.storyboard */,
+				AD01A9681B550D420034F8EA /* Images.xcassets */,
+				AD01A96A1B550D420034F8EA /* LaunchScreen.xib */,
+				AD01A95B1B550D420034F8EA /* Supporting Files */,
+			);
+			path = SFPullRefresh;
+			sourceTree = "<group>";
+		};
+		AD01A95B1B550D420034F8EA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD01A95C1B550D420034F8EA /* Info.plist */,
+				AD01A95D1B550D420034F8EA /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AD01A9741B550D420034F8EA /* SFPullRefreshTests */ = {
+			isa = PBXGroup;
+			children = (
+				AD01A9771B550D420034F8EA /* SFPullRefreshTests.m */,
+				AD01A9751B550D420034F8EA /* Supporting Files */,
+			);
+			path = SFPullRefreshTests;
+			sourceTree = "<group>";
+		};
+		AD01A9751B550D420034F8EA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD01A9761B550D420034F8EA /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AD01A9871B550DC10034F8EA /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				AD01A9941B5510900034F8EA /* UIScrollView+SFPullRefresh.h */,
+				AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */,
+				AD01A9A31B5550650034F8EA /* SFRefreshControl.h */,
+				AD01A9A41B5550650034F8EA /* SFRefreshControl.m */,
+				AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */,
+				AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AD01A9571B550D420034F8EA /* SFPullRefresh */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD01A97B1B550D420034F8EA /* Build configuration list for PBXNativeTarget "SFPullRefresh" */;
+			buildPhases = (
+				62EBEF37109FF21D75BB77F0 /* Check Pods Manifest.lock */,
+				AD01A9541B550D420034F8EA /* Sources */,
+				AD01A9551B550D420034F8EA /* Frameworks */,
+				AD01A9561B550D420034F8EA /* Resources */,
+				2BDCC7A38E25E4BC2C9549FD /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SFPullRefresh;
+			productName = SFPullRefresh;
+			productReference = AD01A9581B550D420034F8EA /* SFPullRefresh.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AD01A9701B550D420034F8EA /* SFPullRefreshTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD01A97E1B550D420034F8EA /* Build configuration list for PBXNativeTarget "SFPullRefreshTests" */;
+			buildPhases = (
+				AD01A96D1B550D420034F8EA /* Sources */,
+				AD01A96E1B550D420034F8EA /* Frameworks */,
+				AD01A96F1B550D420034F8EA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AD01A9731B550D420034F8EA /* PBXTargetDependency */,
+			);
+			name = SFPullRefreshTests;
+			productName = SFPullRefreshTests;
+			productReference = AD01A9711B550D420034F8EA /* SFPullRefreshTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AD01A9501B550D420034F8EA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = sofach;
+				TargetAttributes = {
+					AD01A9571B550D420034F8EA = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					AD01A9701B550D420034F8EA = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = AD01A9571B550D420034F8EA;
+					};
+				};
+			};
+			buildConfigurationList = AD01A9531B550D420034F8EA /* Build configuration list for PBXProject "SFPullRefresh" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AD01A94F1B550D420034F8EA;
+			productRefGroup = AD01A9591B550D420034F8EA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AD01A9571B550D420034F8EA /* SFPullRefresh */,
+				AD01A9701B550D420034F8EA /* SFPullRefreshTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AD01A9561B550D420034F8EA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD01A9671B550D420034F8EA /* Main.storyboard in Resources */,
+				AD01A96C1B550D420034F8EA /* LaunchScreen.xib in Resources */,
+				AD01A9691B550D420034F8EA /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD01A96F1B550D420034F8EA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2BDCC7A38E25E4BC2C9549FD /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SFPullRefresh/Pods-SFPullRefresh-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		62EBEF37109FF21D75BB77F0 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AD01A9541B550D420034F8EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD01A9961B5510900034F8EA /* UIScrollView+SFPullRefresh.m in Sources */,
+				AD01A9851B550DA70034F8EA /* TopLoadViewController.m in Sources */,
+				AD01A9641B550D420034F8EA /* ViewController.m in Sources */,
+				AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */,
+				AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */,
+				AD01A9611B550D420034F8EA /* AppDelegate.m in Sources */,
+				AD01A9861B550DA70034F8EA /* TopRefreshViewController.m in Sources */,
+				AD01A95E1B550D420034F8EA /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD01A96D1B550D420034F8EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD01A9781B550D420034F8EA /* SFPullRefreshTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AD01A9731B550D420034F8EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AD01A9571B550D420034F8EA /* SFPullRefresh */;
+			targetProxy = AD01A9721B550D420034F8EA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		AD01A9651B550D420034F8EA /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD01A9661B550D420034F8EA /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		AD01A96A1B550D420034F8EA /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD01A96B1B550D420034F8EA /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		AD01A9791B550D420034F8EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		AD01A97A1B550D420034F8EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AD01A97C1B550D420034F8EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0DB608BF99A249A94EF7236F /* Pods-SFPullRefresh.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = SFPullRefresh/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AD01A97D1B550D420034F8EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 331B6C408C389E165ECD3941 /* Pods-SFPullRefresh.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = SFPullRefresh/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		AD01A97F1B550D420034F8EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = SFPullRefreshTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SFPullRefresh.app/SFPullRefresh";
+			};
+			name = Debug;
+		};
+		AD01A9801B550D420034F8EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = SFPullRefreshTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SFPullRefresh.app/SFPullRefresh";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AD01A9531B550D420034F8EA /* Build configuration list for PBXProject "SFPullRefresh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD01A9791B550D420034F8EA /* Debug */,
+				AD01A97A1B550D420034F8EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD01A97B1B550D420034F8EA /* Build configuration list for PBXNativeTarget "SFPullRefresh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD01A97C1B550D420034F8EA /* Debug */,
+				AD01A97D1B550D420034F8EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD01A97E1B550D420034F8EA /* Build configuration list for PBXNativeTarget "SFPullRefreshTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD01A97F1B550D420034F8EA /* Debug */,
+				AD01A9801B550D420034F8EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AD01A9501B550D420034F8EA /* Project object */;
+}
