@@ -1,5 +1,5 @@
 //
-//  TopRefreshViewController.h
+//  TopLoadViewController.h
 //  SFPullRefreshDemo
 //
 //  Created by shaohua.chen on 10/16/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TopRefreshViewController : UIViewController
+@interface CollectionTestViewController : UIViewController
 
 @end

@@ -7,8 +7,8 @@
 //
 
 #import "ViewController.h"
-#import "TopLoadViewController.h"
-#import "TopRefreshViewController.h"
+#import "CollectionTestViewController.h"
+#import "TableTestViewController.h"
 
 @interface ViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -23,7 +23,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    _items = @[@"顶部刷新，底部加载更多", @"顶部加载更多"];
+    _items = @[@"UITableView Test", @"UICollectionView Test(not support well)"];
     
     _table = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
     _table.dataSource = self;
@@ -70,12 +70,12 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.row == 0) {
-        TopRefreshViewController *topRefreshVC = [[TopRefreshViewController alloc] initWithNibName:nil bundle:nil];
+        TableTestViewController *topRefreshVC = [[TableTestViewController alloc] initWithNibName:nil bundle:nil];
         [self.navigationController pushViewController:topRefreshVC animated:YES];
     }
     else if (indexPath.row == 1)
     {
-        TopLoadViewController *topLoadVC = [[TopLoadViewController alloc] initWithNibName:nil bundle:nil];
+        CollectionTestViewController *topLoadVC = [[CollectionTestViewController alloc] initWithNibName:nil bundle:nil];
         [self.navigationController pushViewController:topLoadVC animated:YES];
     }
     else

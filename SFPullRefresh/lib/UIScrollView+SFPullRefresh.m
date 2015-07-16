@@ -450,7 +450,7 @@ typedef enum {
         if (self.refreshPosition == SFPullRefreshPositionTop) {
             
             offset.y += self.refreshControl.frame.size.height/4;
-            
+
             if (offset.y < 0 && offset.y > -self.refreshControl.frame.size.height){ //refreshControl partly appeared
                 self.refreshState = SFPullRefreshStatePullToRefresh;
                 [self.refreshControl willRefreshWithProgress:fabs(offset.y)/self.refreshControl.frame.size.height];

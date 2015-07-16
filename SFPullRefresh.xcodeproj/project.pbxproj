@@ -15,11 +15,12 @@
 		AD01A9691B550D420034F8EA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD01A9681B550D420034F8EA /* Images.xcassets */; };
 		AD01A96C1B550D420034F8EA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD01A96A1B550D420034F8EA /* LaunchScreen.xib */; };
 		AD01A9781B550D420034F8EA /* SFPullRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9771B550D420034F8EA /* SFPullRefreshTests.m */; };
-		AD01A9851B550DA70034F8EA /* TopLoadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9821B550DA70034F8EA /* TopLoadViewController.m */; };
-		AD01A9861B550DA70034F8EA /* TopRefreshViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9841B550DA70034F8EA /* TopRefreshViewController.m */; };
+		AD01A9851B550DA70034F8EA /* CollectionTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9821B550DA70034F8EA /* CollectionTestViewController.m */; };
+		AD01A9861B550DA70034F8EA /* TableTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9841B550DA70034F8EA /* TableTestViewController.m */; };
 		AD01A9961B5510900034F8EA /* UIScrollView+SFPullRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */; };
 		AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A41B5550650034F8EA /* SFRefreshControl.m */; };
 		AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */; };
+		AD15D7271B57959500DBF44C /* CustomRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD15D7261B57959500DBF44C /* CustomRefreshControl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,16 +50,18 @@
 		AD01A9711B550D420034F8EA /* SFPullRefreshTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SFPullRefreshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD01A9761B550D420034F8EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AD01A9771B550D420034F8EA /* SFPullRefreshTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SFPullRefreshTests.m; sourceTree = "<group>"; };
-		AD01A9811B550DA70034F8EA /* TopLoadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopLoadViewController.h; sourceTree = "<group>"; };
-		AD01A9821B550DA70034F8EA /* TopLoadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopLoadViewController.m; sourceTree = "<group>"; };
-		AD01A9831B550DA70034F8EA /* TopRefreshViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopRefreshViewController.h; sourceTree = "<group>"; };
-		AD01A9841B550DA70034F8EA /* TopRefreshViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopRefreshViewController.m; sourceTree = "<group>"; };
+		AD01A9811B550DA70034F8EA /* CollectionTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionTestViewController.h; sourceTree = "<group>"; };
+		AD01A9821B550DA70034F8EA /* CollectionTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionTestViewController.m; sourceTree = "<group>"; };
+		AD01A9831B550DA70034F8EA /* TableTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableTestViewController.h; sourceTree = "<group>"; };
+		AD01A9841B550DA70034F8EA /* TableTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableTestViewController.m; sourceTree = "<group>"; };
 		AD01A9941B5510900034F8EA /* UIScrollView+SFPullRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SFPullRefresh.h"; sourceTree = "<group>"; };
 		AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SFPullRefresh.m"; sourceTree = "<group>"; };
 		AD01A9A31B5550650034F8EA /* SFRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFRefreshControl.h; sourceTree = "<group>"; };
 		AD01A9A41B5550650034F8EA /* SFRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFRefreshControl.m; sourceTree = "<group>"; };
 		AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFLoadMoreControl.h; sourceTree = "<group>"; };
 		AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFLoadMoreControl.m; sourceTree = "<group>"; };
+		AD15D7251B57959500DBF44C /* CustomRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomRefreshControl.h; sourceTree = "<group>"; };
+		AD15D7261B57959500DBF44C /* CustomRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomRefreshControl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,10 +124,12 @@
 			isa = PBXGroup;
 			children = (
 				AD01A9871B550DC10034F8EA /* lib */,
-				AD01A9811B550DA70034F8EA /* TopLoadViewController.h */,
-				AD01A9821B550DA70034F8EA /* TopLoadViewController.m */,
-				AD01A9831B550DA70034F8EA /* TopRefreshViewController.h */,
-				AD01A9841B550DA70034F8EA /* TopRefreshViewController.m */,
+				AD01A9811B550DA70034F8EA /* CollectionTestViewController.h */,
+				AD01A9821B550DA70034F8EA /* CollectionTestViewController.m */,
+				AD01A9831B550DA70034F8EA /* TableTestViewController.h */,
+				AD01A9841B550DA70034F8EA /* TableTestViewController.m */,
+				AD15D7251B57959500DBF44C /* CustomRefreshControl.h */,
+				AD15D7261B57959500DBF44C /* CustomRefreshControl.m */,
 				AD01A95F1B550D420034F8EA /* AppDelegate.h */,
 				AD01A9601B550D420034F8EA /* AppDelegate.m */,
 				AD01A9621B550D420034F8EA /* ViewController.h */,
@@ -312,12 +317,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD01A9961B5510900034F8EA /* UIScrollView+SFPullRefresh.m in Sources */,
-				AD01A9851B550DA70034F8EA /* TopLoadViewController.m in Sources */,
+				AD01A9851B550DA70034F8EA /* CollectionTestViewController.m in Sources */,
 				AD01A9641B550D420034F8EA /* ViewController.m in Sources */,
 				AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */,
 				AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */,
 				AD01A9611B550D420034F8EA /* AppDelegate.m in Sources */,
-				AD01A9861B550DA70034F8EA /* TopRefreshViewController.m in Sources */,
+				AD15D7271B57959500DBF44C /* CustomRefreshControl.m in Sources */,
+				AD01A9861B550DA70034F8EA /* TableTestViewController.m in Sources */,
 				AD01A95E1B550D420034F8EA /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

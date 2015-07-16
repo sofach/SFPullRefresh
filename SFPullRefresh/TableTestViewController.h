@@ -1,5 +1,5 @@
 //
-//  TopLoadViewController.h
+//  TopRefreshViewController.h
 //  SFPullRefreshDemo
 //
 //  Created by shaohua.chen on 10/16/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TopLoadViewController : UIViewController
+@interface TableTestViewController : UIViewController
 
 @end
