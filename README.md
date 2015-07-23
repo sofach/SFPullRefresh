@@ -50,6 +50,7 @@ Add pull refresh handler and load more handler to your tableView or collectionVi
         [self.items removeAllObjects];
         [self.table sf_finishLoading];
     }];
+}
 ```
 #### Customization
 You can set the position, and if you want use your own refresh animation, you can customize refresh or load more control with your own view.
