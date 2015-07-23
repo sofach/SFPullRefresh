@@ -45,15 +45,12 @@
         _rightGateLayer.lineWidth = 4.0;
         _rightGateLayer.path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(frame.size.width*3.0/4-2, frame.size.height/4, 4, frame.size.height/2)].CGPath;
         [self.layer addSublayer:_rightGateLayer];
-
-        
         
         _ballLayer = [[CAShapeLayer alloc] init];
         _ballLayer.frame = CGRectMake(frame.size.width/4, frame.size.height/2, 6, 6);
         _ballLayer.backgroundColor = [UIColor blackColor].CGColor;
         _ballLayer.cornerRadius = 3;
         [self.layer addSublayer:_ballLayer];
-
     }
     return self;
 }
@@ -83,7 +80,6 @@
     if (progress>1) {
         progress = 1;
     }
-    NSLog(@"%f", progress);
 
     _leftGateLayer.hidden = NO;
     _rightGateLayer.hidden = NO;

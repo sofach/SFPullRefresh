@@ -12,7 +12,9 @@
 
 @property (strong, nonatomic) NSMutableArray *loadingLayers;
 @property (strong, nonatomic) CALayer *loadingContainer;
-@property (strong, nonatomic) UILabel *reachedEndLabel;
+@property (strong, nonatomic) UILabel *reachEndLabel;
+
+@property (strong, nonatomic) UIColor *tintColor;
 
 @end
 
@@ -38,14 +40,14 @@
 
 - (void)setup
 {
-    _reachedEndLabel = [[UILabel alloc] initWithFrame:self.bounds];
-    _reachedEndLabel.backgroundColor = [UIColor clearColor];
-    _reachedEndLabel.font = [UIFont systemFontOfSize:15.0];
-    _reachedEndLabel.textColor = self.tintColor;
-    _reachedEndLabel.textAlignment = NSTextAlignmentCenter;
-    _reachedEndLabel.text = @"没有了";
-    _reachedEndLabel.hidden = YES;
-    [self addSubview:_reachedEndLabel];
+    _reachEndLabel = [[UILabel alloc] initWithFrame:self.bounds];
+    _reachEndLabel.backgroundColor = [UIColor clearColor];
+    _reachEndLabel.font = [UIFont systemFontOfSize:15.0];
+    _reachEndLabel.textColor = self.tintColor;
+    _reachEndLabel.textAlignment = NSTextAlignmentCenter;
+    _reachEndLabel.text = @"没有了";
+    _reachEndLabel.hidden = YES;
+    [self addSubview:_reachEndLabel];
     
     _loadingLayers = [NSMutableArray array];
     CGFloat w = self.frame.size.height*7/16;
@@ -91,7 +93,7 @@
 
 #pragma mark - SFLoadMoreControlDelegate
 - (void)beginLoading {
-    _reachedEndLabel.hidden = YES;
+    _reachEndLabel.hidden = YES;
     [_loadingLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
         
         CAAnimation *animation = [self animationAtIndex:idx];
@@ -109,21 +111,16 @@
     }];
 }
 
-- (void)reachedEnd:(BOOL)reachedEnd
+- (void)reachEndWithText:(NSString *)text
 {
-    if (reachedEnd) {
-        _reachedEndLabel.hidden = NO;
-    }
-    else
-    {
-        _reachedEndLabel.hidden = YES;
-    }
+    _reachEndLabel.hidden = NO;
+    _reachEndLabel.text = text;
 
 }
 
-- (void)setReachedEndText:(NSString *)reachedEndText
+- (void)setReachEndText:(NSString *)reachedEndText
 {
-    _reachedEndLabel.text = reachedEndText;
+    _reachEndLabel.text = reachedEndText;
 }
 
 - (void)setTintColor:(UIColor *)tintColor

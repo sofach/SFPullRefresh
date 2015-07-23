@@ -15,12 +15,12 @@
 @interface SFRefreshControl ()
 
 @property (assign, nonatomic) BOOL isRotating;
-@property (assign, nonatomic) BOOL isRefreshingAnimation;
 
 @property (strong, nonatomic) CALayer *refreshContainer;
 @property (strong, nonatomic) NSMutableArray *refreshLayers;
 
 @property (strong, nonatomic) UILabel *reachedEndLabel;
+@property (strong, nonatomic) UIColor *tintColor;
 
 @end
 

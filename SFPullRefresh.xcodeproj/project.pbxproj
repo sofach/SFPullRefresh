@@ -20,6 +20,9 @@
 		AD01A9961B5510900034F8EA /* UIScrollView+SFPullRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */; };
 		AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A41B5550650034F8EA /* SFRefreshControl.m */; };
 		AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */; };
+		AD1410701B60B3040089AA30 /* SFPullRefresh.podspec in Resources */ = {isa = PBXBuildFile; fileRef = AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */; };
+		AD1410741B60B3EA0089AA30 /* TestTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AD1410721B60B3EA0089AA30 /* TestTableCell.m */; };
+		AD1410751B60B3EA0089AA30 /* TestTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AD1410731B60B3EA0089AA30 /* TestTableCell.xib */; };
 		AD15D7271B57959500DBF44C /* CustomRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD15D7261B57959500DBF44C /* CustomRefreshControl.m */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +63,10 @@
 		AD01A9A41B5550650034F8EA /* SFRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFRefreshControl.m; sourceTree = "<group>"; };
 		AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFLoadMoreControl.h; sourceTree = "<group>"; };
 		AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFLoadMoreControl.m; sourceTree = "<group>"; };
+		AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SFPullRefresh.podspec; sourceTree = "<group>"; };
+		AD1410711B60B3EA0089AA30 /* TestTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestTableCell.h; sourceTree = "<group>"; };
+		AD1410721B60B3EA0089AA30 /* TestTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestTableCell.m; sourceTree = "<group>"; };
+		AD1410731B60B3EA0089AA30 /* TestTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestTableCell.xib; sourceTree = "<group>"; };
 		AD15D7251B57959500DBF44C /* CustomRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomRefreshControl.h; sourceTree = "<group>"; };
 		AD15D7261B57959500DBF44C /* CustomRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomRefreshControl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -103,6 +110,7 @@
 		AD01A94F1B550D420034F8EA = {
 			isa = PBXGroup;
 			children = (
+				AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */,
 				AD01A95A1B550D420034F8EA /* SFPullRefresh */,
 				AD01A9741B550D420034F8EA /* SFPullRefreshTests */,
 				AD01A9591B550D420034F8EA /* Products */,
@@ -128,6 +136,9 @@
 				AD01A9821B550DA70034F8EA /* CollectionTestViewController.m */,
 				AD01A9831B550DA70034F8EA /* TableTestViewController.h */,
 				AD01A9841B550DA70034F8EA /* TableTestViewController.m */,
+				AD1410711B60B3EA0089AA30 /* TestTableCell.h */,
+				AD1410721B60B3EA0089AA30 /* TestTableCell.m */,
+				AD1410731B60B3EA0089AA30 /* TestTableCell.xib */,
 				AD15D7251B57959500DBF44C /* CustomRefreshControl.h */,
 				AD15D7261B57959500DBF44C /* CustomRefreshControl.m */,
 				AD01A95F1B550D420034F8EA /* AppDelegate.h */,
@@ -265,6 +276,8 @@
 			files = (
 				AD01A9671B550D420034F8EA /* Main.storyboard in Resources */,
 				AD01A96C1B550D420034F8EA /* LaunchScreen.xib in Resources */,
+				AD1410751B60B3EA0089AA30 /* TestTableCell.xib in Resources */,
+				AD1410701B60B3040089AA30 /* SFPullRefresh.podspec in Resources */,
 				AD01A9691B550D420034F8EA /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -316,6 +329,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD1410741B60B3EA0089AA30 /* TestTableCell.m in Sources */,
 				AD01A9961B5510900034F8EA /* UIScrollView+SFPullRefresh.m in Sources */,
 				AD01A9851B550DA70034F8EA /* CollectionTestViewController.m in Sources */,
 				AD01A9641B550D420034F8EA /* ViewController.m in Sources */,

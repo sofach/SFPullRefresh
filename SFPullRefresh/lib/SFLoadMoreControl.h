@@ -8,21 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ *  如果需要自定义loadMoreControl，需要实现这个协议
+ */
 @protocol SFLoadMoreControlDelegate <NSObject>
 
 - (void)beginLoading;
 - (void)endLoading;
-- (void)reachedEnd:(BOOL)reachedEnd;
+- (void)reachEndWithText:(NSString *)text;
 
 @optional
-- (void)setReachedEndText:(NSString *)reachedEndText;
 - (void)setTintColor:(UIColor *)tintColor;
 
 @end
 
 @interface SFLoadMoreControl : UIView <SFLoadMoreControlDelegate>
 
-@property (strong, nonatomic) UIColor *tintColor;
-@property (strong, nonatomic) NSString *reachedEndText;
 
 @end

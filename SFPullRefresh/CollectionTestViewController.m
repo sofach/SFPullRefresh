@@ -11,6 +11,7 @@
 
 @interface CollectionTestViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
+@property (assign, nonatomic) NSInteger page;
 @property (strong, nonatomic) NSMutableArray *items;
 @property (strong, nonatomic) UICollectionView *collectionView;
 @end
@@ -24,7 +25,7 @@
     // Do any additional setup after loading the view.
 
     _items = [NSMutableArray array];
-    
+    _page = 0;
     UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
     _collectionView=[[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:layout];
     [_collectionView setDataSource:self];
@@ -36,6 +37,7 @@
     [self.view addSubview:_collectionView];
     
     [self.collectionView sf_addRefreshHandler:^{
+        _page = 0;
         [self loadStrings];
     }];
     [self.collectionView sf_addLoadMoreHandler:^{
@@ -55,16 +57,16 @@
 
 - (void)loadStrings
 {
-    [self requestDataAtPage:_collectionView.sf_page success:^(NSArray *strings) {
+    [self requestDataAtPage:_page success:^(NSArray *strings) {
         if ([self.collectionView sf_isRefreshing]) {
             [self.items removeAllObjects];
         }
         for (NSString *str in strings) {
             [self.items insertObject:str atIndex:0];
         }
-        
+        _page++;
         if (strings.count<20) {
-            [self.collectionView sf_reachEnd];
+            [self.collectionView sf_reachEndWithText:@"加载完毕"];
         }
         if (self.items.count<=0) {
             

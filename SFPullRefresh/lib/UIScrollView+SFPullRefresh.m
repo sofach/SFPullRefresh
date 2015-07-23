@@ -12,7 +12,6 @@
 @interface SFPullRefreshContext : NSObject
 
 @property (weak, nonatomic) UIScrollView *owner;
-@property (assign, nonatomic) NSInteger page;
 @property (assign, nonatomic) BOOL isRefreshing;
 @property (assign, nonatomic) BOOL autoLoading;
 
@@ -24,7 +23,7 @@
 
 - (void)loadMoreAnimated:(BOOL)animated;
 
-- (void)reachEnd:(BOOL)reachEnd;
+- (void)reachEndWithText:(NSString *)text;
 
 - (void)finishLoading;
 
@@ -103,11 +102,6 @@
     [self.context setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler atPosition:position];
 }
 
-- (NSInteger)sf_page
-{
-    return self.context.page;
-}
-
 - (BOOL)sf_isRefreshing
 {
     return self.context.isRefreshing;
@@ -128,9 +122,9 @@
     [self.context loadMoreAnimated:animated];
 }
 
-- (void)sf_reachEnd
+- (void)sf_reachEndWithText:(NSString *)text
 {
-    [self.context reachEnd:YES];
+    [self.context reachEndWithText:text];
 }
 
 - (void)sf_setTintColor:(UIColor *)tintColor
@@ -139,6 +133,20 @@
 }
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 typedef enum {
     SFPullRefreshStateNormal = 0,
@@ -182,7 +190,6 @@ typedef enum {
         _orignInsetTop = CGFLOAT_MAX;
         _orignOffsetY = CGFLOAT_MAX;
         _preContentHeight = 0;
-        _page = 0;
         _autoLoading = YES;
         _refreshPosition = SFPullRefreshPositionTop;
         _loadMorePosition = SFPullRefreshPositionBottom;
@@ -286,10 +293,13 @@ typedef enum {
     loadMoreHandler = nil;
 }
 
-- (void)reachEnd:(BOOL)reachEnd
+- (void)reachEndWithText:(NSString *)text
 {
     if (self.loadMoreControl) {
-        [self.loadMoreControl reachedEnd:reachEnd];
+        if (!text) {
+            text = @"没有了";
+        }
+        [self.loadMoreControl reachEndWithText:text];
         self.loadMoreState = SFPullRefreshStateReachEnd;
     }
 }
@@ -299,13 +309,11 @@ typedef enum {
     if ([self.owner respondsToSelector:@selector(reloadData)]) {
         [self.owner performSelector:@selector(reloadData)];
     }
-    if (self.owner.contentSize.height>self.preContentHeight || self.isRefreshing) {
-        self.page++;
-    }
     
     self.preContentHeight = self.owner.contentSize.height;
     
     if (self.loadMoreControl) {
+
         [self.loadMoreControl endLoading];
         if (self.loadMoreState == SFPullRefreshStateLoading) {
             self.loadMoreState = SFPullRefreshStateNormal;
@@ -384,12 +392,11 @@ typedef enum {
             
             CGFloat preContentHeight = [[change objectForKey:@"old"] CGSizeValue].height;
             CGFloat curContentHeight = [[change objectForKey:@"new"] CGSizeValue].height;
+            
             if (preContentHeight == curContentHeight) {
                 return;
             }
-//            if (curContentHeight>preContentHeight) {
-//                self.page++;
-//            }
+
             if (!self.loadMoreControl) {
                 return;
             }
@@ -441,7 +448,6 @@ typedef enum {
 }
 
 - (void)tableViewDidScroll {
-    
     if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing) {
         
         CGPoint offset = self.owner.contentOffset;
@@ -489,7 +495,7 @@ typedef enum {
         if (contentSize.height < self.owner.frame.size.height) {
             contentSize.height = self.owner.frame.size.height;
         }
-        
+
         if (self.loadMorePosition == SFPullRefreshPositionTop) {
             
             if (offset.y < 0) {
@@ -533,7 +539,6 @@ typedef enum {
         self.loadMoreState = SFPullRefreshStateNormal;
         [self.refreshControl beginRefreshing];
         if (self.refreshHandler) {
-            self.page = 0;
             self.refreshHandler();
         }
         

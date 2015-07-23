@@ -9,6 +9,7 @@
 #import "TableTestViewController.h"
 #import "UIScrollView+SFPullRefresh.h"
 #import "CustomRefreshControl.h"
+#import "TestTableCell.h"
 
 @interface TableTestViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -17,31 +18,38 @@
 
 @property (strong, nonatomic) UITableView *table;
 
+@property (strong, nonatomic) TestTableCell *heightCell;
 @end
 
 @implementation TableTestViewController
+
+static NSString *cellId = @"cellId";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     _items = [NSMutableArray array];
-    
+    _page = 0;
     _table = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
     _table.dataSource = self;
     _table.delegate = self;
     _table.tableFooterView = [[UIView alloc] init];
+    [_table registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
+//    _table.estimatedRowHeight = 60;
     [self.view addSubview:_table];
-    
-    CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 60)];
-    
-    [_table sf_addRefreshHandler:^{
-        [self loadStrings];
-    } customRefreshControl:customRefreshControl position:SFPullRefreshPositionTop];
-    
+
+//    [self loadStrings];
+//    CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 60)];
+//    
 //    [_table sf_addRefreshHandler:^{
 //        [self loadStrings];
-//    }];
+//    } customRefreshControl:customRefreshControl position:SFPullRefreshPositionTop];
+    
+    [_table sf_addRefreshHandler:^{
+        _page = 0;
+        [self loadStrings];
+    }];
     
     [_table sf_addLoadMoreHandler:^{
         [self loadStrings];
@@ -60,16 +68,21 @@
 
 - (void)loadStrings
 {
-    [self requestDataAtPage:self.table.sf_page success:^(NSArray *strings) {
+    [self requestDataAtPage:_page success:^(NSArray *strings) {
         if (self.table.sf_isRefreshing) {
             [self.items removeAllObjects];
         }
-        [self.items addObjectsFromArray:strings];
-
+        for (NSString *str in strings) {
+//            [self.items insertObject:str atIndex:0]; //如果顶部加载，数据从头插入体验更好
+            [self.items addObject:str];
+        }
+        
+        _page++;
         if (strings.count<10) {
-            [self.table sf_reachEnd];
+            [self.table sf_reachEndWithText:@"加载完毕"];
         }
         [self.table sf_finishLoading];
+
     } failure:^(NSString *msg) {
         [self.items removeAllObjects];
         [self.table sf_finishLoading];
@@ -92,19 +105,18 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    if (!_heightCell) {
+        _heightCell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    }
+    [_heightCell setString:[_items objectAtIndex:indexPath.row]];
+    CGSize size = [_heightCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    return size.height+1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellId = @"cellId";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
-//        cell.backgroundColor = [UIColor greenColor];
-    }
-    cell.textLabel.text = [_items objectAtIndex:indexPath.row];
-    
+    TestTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    [cell setString:[_items objectAtIndex:indexPath.row]];
     return cell;
 }
 
@@ -120,9 +132,14 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         sleep(1.5);
         NSMutableArray *arr = [NSMutableArray array];
-        if (page<3) {
+        if (page<4) {
             for (int i=0; i<10; i++) {
-                [arr addObject:[NSString stringWithFormat:@"this is row%li", i+page*10]];
+                NSMutableString *string = [NSMutableString string];
+                int count = rand()%20+1;
+                for (int j=0; j<count; j++) {
+                    [string appendFormat:@"this is row%ld", i+page*10];
+                }
+                [arr addObject:string];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success) {
@@ -136,9 +153,6 @@
                 if (success) {
                     success(arr);
                 }
-//                if (failure) {
-//                    failure(@"服务器错误！");
-//                }
             });
         }
         
