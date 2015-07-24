@@ -52,6 +52,7 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+
     // Dispose of any resources that can be recreated.
 }
 
@@ -160,7 +161,7 @@
         NSMutableArray *arr = [NSMutableArray array];
         if (page<3) {
             for (NSInteger i=0; i<20; i++) {
-                [arr addObject:[NSString stringWithFormat:@"this is row%i", i+page*10]];
+                [arr addObject:[NSString stringWithFormat:@"this is row%li", i+page*10]];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success) {

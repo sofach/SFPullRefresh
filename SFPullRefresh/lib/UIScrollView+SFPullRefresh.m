@@ -27,17 +27,19 @@
 
 - (void)finishLoading;
 
-- (void)setTintColor:(UIColor *)tintColor;
+- (void)setControlColor:(UIColor *)controlColor;
+
+- (void)removeObservers;
 
 @end
 
 @interface UIScrollView ()
 
-@property (strong, nonatomic) SFPullRefreshContext *context;
 
 @end
 
 @implementation UIScrollView (SFPullRefresh)
+@dynamic context;
 
 #pragma mark getter setter
 - (SFPullRefreshContext *)context
@@ -127,11 +129,18 @@
     [self.context reachEndWithText:text];
 }
 
-- (void)sf_setTintColor:(UIColor *)tintColor
+- (void)sf_setControlColor:(UIColor *)controlColor
 {
-    [self.context setTintColor:tintColor];
+    [self.context setControlColor:controlColor];
 }
 
+- (void)sf_willMoveToSuperview:(UIView *)newSuperView
+{
+    [self sf_willMoveToSuperview:newSuperView];
+    if (self.superview && !newSuperView) {
+        [self.context removeObservers];
+    }
+}
 @end
 
 
@@ -197,13 +206,7 @@ typedef enum {
     return self;
 }
 
-- (void)dealloc
-{
-    self.refreshHandler = nil;
-    self.loadMoreHandler = nil;
-    [self.owner removeObserver:self forKeyPath:@"contentSize"];
-    [self.owner removeObserver:self forKeyPath:@"contentOffset"];
-}
+
 
 #pragma mark - getter setter
 - (void)setOwner:(UIScrollView *)owner
@@ -216,6 +219,15 @@ typedef enum {
             [_owner performSelector:@selector(setBackgroundView:) withObject:_backgroundView];
         }
     }
+    
+    static dispatch_once_t once_token;
+    dispatch_once(&once_token,  ^{
+        SEL orignSelector = @selector(willMoveToSuperview:);
+        SEL extendedSelector = @selector(sf_willMoveToSuperview:);
+        Method originalMethod = class_getInstanceMethod([_owner class], orignSelector);
+        Method extendedMethod = class_getInstanceMethod([_owner class], extendedSelector);
+        method_exchangeImplementations(originalMethod, extendedMethod);
+    });
     
     [_owner addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
     [_owner addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
@@ -230,7 +242,6 @@ typedef enum {
         _refreshControl.frame = frame;
     }
 }
-
 
 #pragma mark public method
 - (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void (^)(void))refreshHandler atPosition:(SFPullRefreshPosition)position
@@ -299,7 +310,10 @@ typedef enum {
         if (!text) {
             text = @"没有了";
         }
-        [self.loadMoreControl reachEndWithText:text];
+        if ([self.loadMoreControl respondsToSelector:@selector(reachEndWithText:)]) {
+            [self.loadMoreControl reachEndWithText:text];
+        }
+        
         self.loadMoreState = SFPullRefreshStateReachEnd;
     }
 }
@@ -313,14 +327,18 @@ typedef enum {
     self.preContentHeight = self.owner.contentSize.height;
     
     if (self.loadMoreControl) {
-
-        [self.loadMoreControl endLoading];
+        if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
+            [self.loadMoreControl endLoading];
+        }
+        
         if (self.loadMoreState == SFPullRefreshStateLoading) {
             self.loadMoreState = SFPullRefreshStateNormal;
         }
     }
     if (self.refreshControl) {
-        [self.refreshControl endRefreshing];
+        if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
+            [self.refreshControl endRefreshing];
+        }
         self.refreshState = SFPullRefreshStateNormal;
         self.isRefreshing = NO;
     }
@@ -372,17 +390,21 @@ typedef enum {
 
 }
 
-- (void)setTintColor:(UIColor *)tintColor
+- (void)setControlColor:(UIColor *)controlColor
 {
-    if (self.refreshControl) {
-        [self.refreshControl setTintColor:tintColor];
+    if (self.refreshControl && [self.refreshControl respondsToSelector:@selector(setControlColor:)]) {
+        [self.refreshControl setControlColor:controlColor];
     }
-    if (self.loadMoreControl) {
-        [self.loadMoreControl setTintColor:tintColor];
+    if (self.loadMoreControl && [self.loadMoreControl respondsToSelector:@selector(setControlColor:)]) {
+        [self.loadMoreControl setControlColor:controlColor];
     }
 }
 
-
+- (void)removeObservers
+{
+    [self.owner removeObserver:self forKeyPath:@"contentSize"];
+    [self.owner removeObserver:self forKeyPath:@"contentOffset"];
+}
 
 #define mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -392,7 +414,7 @@ typedef enum {
             
             CGFloat preContentHeight = [[change objectForKey:@"old"] CGSizeValue].height;
             CGFloat curContentHeight = [[change objectForKey:@"new"] CGSizeValue].height;
-            
+
             if (preContentHeight == curContentHeight) {
                 return;
             }
@@ -459,11 +481,15 @@ typedef enum {
 
             if (offset.y < 0 && offset.y > -self.refreshControl.frame.size.height){ //refreshControl partly appeared
                 self.refreshState = SFPullRefreshStatePullToRefresh;
-                [self.refreshControl willRefreshWithProgress:fabs(offset.y)/self.refreshControl.frame.size.height];
+                if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
+                    [self.refreshControl willRefreshWithProgress:fabs(offset.y)/self.refreshControl.frame.size.height];
+                }
                 
             } else if (offset.y <= -self.refreshControl.frame.size.height) {   //refreshControl totally appeard
                 self.refreshState = SFPullRefreshStateReleaseToRefresh;
-                [self.refreshControl willRefreshWithProgress:fabs(offset.y)/self.refreshControl.frame.size.height];
+                if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
+                    [self.refreshControl willRefreshWithProgress:fabs(offset.y)/self.refreshControl.frame.size.height];
+                }
             }
         } else {
             
@@ -477,10 +503,16 @@ typedef enum {
             offset.y += size.height;
             if (offset.y > contentSize.height && offset.y<contentSize.height+self.refreshControl.frame.size.height) { //refreshControl partly appeared
                 self.refreshState = SFPullRefreshStatePullToRefresh;
-                [self.refreshControl willRefreshWithProgress:fabs(offset.y-contentSize.height)/self.refreshControl.frame.size.height];
+                if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
+                    [self.refreshControl willRefreshWithProgress:fabs(offset.y-contentSize.height)/self.refreshControl.frame.size.height];
+                }
+                
             } else if (offset.y > contentSize.height+self.refreshControl.frame.size.height) {   //refreshControl totally appeard
                 self.refreshState = SFPullRefreshStateReleaseToRefresh;
-                [self.refreshControl willRefreshWithProgress:fabs(offset.y-contentSize.height)/self.refreshControl.frame.size.height];
+                if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
+                    [self.refreshControl willRefreshWithProgress:fabs(offset.y-contentSize.height)/self.refreshControl.frame.size.height];
+                }
+                
             }
         }
     }
@@ -500,7 +532,11 @@ typedef enum {
             
             if (offset.y < 0) {
                 self.loadMoreState = SFPullRefreshStateLoading;
-                [self.loadMoreControl beginLoading];
+                
+                if ([self.loadMoreControl respondsToSelector:@selector(beginLoading)]) {
+                    [self.loadMoreControl beginLoading];
+                }
+                
                 if (self.loadMoreHandler)
                 {
                     self.loadMoreHandler();
@@ -516,7 +552,11 @@ typedef enum {
             if ( yMargin > 0) {  //footer will appeared
                 
                 self.loadMoreState = SFPullRefreshStateLoading;
-                [self.loadMoreControl beginLoading];
+                
+                if ([self.loadMoreControl respondsToSelector:@selector(beginLoading)]) {
+                    [self.loadMoreControl beginLoading];
+                }
+                
                 if (self.loadMoreHandler)
                 {
                     self.loadMoreHandler();
@@ -537,7 +577,10 @@ typedef enum {
         self.isRefreshing = YES;
         self.refreshState = SFPullRefreshStateRefreshing;
         self.loadMoreState = SFPullRefreshStateNormal;
-        [self.refreshControl beginRefreshing];
+        if ([self.refreshControl respondsToSelector:@selector(beginRefreshing)]) {
+            [self.refreshControl beginRefreshing];
+        }
+        
         if (self.refreshHandler) {
             self.refreshHandler();
         }

@@ -15,7 +15,10 @@ typedef enum{
     SFPullRefreshPositionBottom = -1
 } SFPullRefreshPosition;
 
+@class SFPullRefreshContext;
 @interface UIScrollView (SFPullRefresh)
+
+@property (strong, nonatomic, readonly) SFPullRefreshContext *context;
 
 /**
  *  添加刷新功能
@@ -101,6 +104,6 @@ typedef enum{
  *
  *  @param tintColor 颜色
  */
-- (void)sf_setTintColor:(UIColor *)tintColor;
+- (void)sf_setControlColor:(UIColor *)controlColor;
 
 @end

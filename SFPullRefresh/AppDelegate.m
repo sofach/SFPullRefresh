@@ -26,7 +26,6 @@
     
     
     ViewController *demoVC = [[ViewController alloc] initWithNibName:nil bundle:nil];
-    
     UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:demoVC];
     navi.navigationBar.barStyle = UIBarStyleDefault;
     self.window.rootViewController = navi;

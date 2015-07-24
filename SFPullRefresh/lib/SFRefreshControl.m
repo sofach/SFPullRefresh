@@ -20,7 +20,7 @@
 @property (strong, nonatomic) NSMutableArray *refreshLayers;
 
 @property (strong, nonatomic) UILabel *reachedEndLabel;
-@property (strong, nonatomic) UIColor *tintColor;
+@property (strong, nonatomic) UIColor *controlColor;
 
 @end
 
@@ -39,7 +39,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-        _tintColor = [UIColor colorWithWhite:110.0/255 alpha:1.0];
+        _controlColor = [UIColor colorWithWhite:110.0/255 alpha:1.0];
         [self setup];
     }
     return self;
@@ -58,7 +58,7 @@
     for (int i=0; i<RefreshLayerCount; i++) {
         
         CALayer *layer = [[CALayer alloc] init];
-        layer.backgroundColor = _tintColor.CGColor;
+        layer.backgroundColor = _controlColor.CGColor;
         layer.frame = CGRectMake(0, 0, 2, (w/2)*RefreshLayerRatio);
         layer.anchorPoint = CGPointMake(0.5, 1+(1-RefreshLayerRatio)/RefreshLayerRatio);
         layer.position = CGPointMake(w/2, w/2);
@@ -176,10 +176,11 @@
     [CATransaction commit];
 }
 
-- (void)setTintColor:(UIColor *)tintColor{
-    _tintColor = tintColor;
+- (void)setControlColor:(UIColor *)controlColor
+{
+    _controlColor = controlColor;
     [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-        layer.backgroundColor = tintColor.CGColor;
+        layer.backgroundColor = _controlColor.CGColor;
     }];
 }
 @end

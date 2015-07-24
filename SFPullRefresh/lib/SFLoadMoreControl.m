@@ -14,7 +14,7 @@
 @property (strong, nonatomic) CALayer *loadingContainer;
 @property (strong, nonatomic) UILabel *reachEndLabel;
 
-@property (strong, nonatomic) UIColor *tintColor;
+@property (strong, nonatomic) UIColor *controlColor;
 
 @end
 
@@ -32,7 +32,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-        _tintColor = [UIColor colorWithWhite:110.0/255 alpha:1.0];
+        _controlColor = [UIColor colorWithWhite:110.0/255 alpha:1.0];
         [self setup];
     }
     return self;
@@ -61,7 +61,7 @@
     for (int i=0; i<12; i++)
     {
         CALayer *layer = [[CALayer alloc] init];
-        layer.backgroundColor = _tintColor.CGColor;
+        layer.backgroundColor = _controlColor.CGColor;
         layer.frame = CGRectMake(w/2-1, w/2-w*2/7, 2, w*2/7);
         layer.anchorPoint = CGPointMake(0.5, 1+3/4.0);
         layer.allowsEdgeAntialiasing = YES;
@@ -123,11 +123,11 @@
     _reachEndLabel.text = reachedEndText;
 }
 
-- (void)setTintColor:(UIColor *)tintColor
+- (void)setControlColor:(UIColor *)controlColor
 {
-    _tintColor = tintColor;
+    _controlColor = controlColor;
     [_loadingLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-        [layer setBackgroundColor:_tintColor.CGColor];
+        [layer setBackgroundColor:_controlColor.CGColor];
     }];
 }
 

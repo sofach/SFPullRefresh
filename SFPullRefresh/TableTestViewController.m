@@ -5,6 +5,7 @@
 //  Created by shaohua.chen on 10/16/14.
 //  Copyright (c) 2014 shaohua.chen. All rights reserved.
 //
+#import <objc/runtime.h>
 
 #import "TableTestViewController.h"
 #import "UIScrollView+SFPullRefresh.h"
@@ -38,22 +39,28 @@ static NSString *cellId = @"cellId";
     [_table registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
 //    _table.estimatedRowHeight = 60;
     [self.view addSubview:_table];
-
-//    [self loadStrings];
+    
 //    CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 60)];
 //    
 //    [_table sf_addRefreshHandler:^{
+//        self.page = 0;
 //        [self loadStrings];
 //    } customRefreshControl:customRefreshControl position:SFPullRefreshPositionTop];
     
+    __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
     [_table sf_addRefreshHandler:^{
-        _page = 0;
-        [self loadStrings];
+        wkself.page = 0;
+        [wkself loadStrings];
     }];
     
     [_table sf_addLoadMoreHandler:^{
-        [self loadStrings];
+        [wkself loadStrings];
     }];
+}
+
+- (void)testBlock:(void(^)(void))block
+{
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -64,6 +71,12 @@ static NSString *cellId = @"cellId";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
+
+
+- (void)dealloc
+{
+    NSLog(@"TableTestViewController dealloced");
 }
 
 - (void)loadStrings

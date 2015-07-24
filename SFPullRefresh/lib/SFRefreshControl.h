@@ -18,11 +18,10 @@
 - (void)endRefreshing;
 
 @optional
-- (void)setTintColor:(UIColor *)tintColor;
+- (void)setControlColor:(UIColor *)controlColor;
 
 @end
 
 @interface SFRefreshControl : UIControl <SFRefreshControlDelegate>
-
 
 @end

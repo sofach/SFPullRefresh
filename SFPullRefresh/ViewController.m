@@ -14,6 +14,9 @@
 
 @property (strong, nonatomic) UITableView *table;
 @property (strong, nonatomic) NSArray *items;
+@property (strong, nonatomic) NSString *testString;
+
+@property (strong, nonatomic) TableTestViewController *topRefreshVC;
 
 @end
 

@@ -18,7 +18,7 @@
 - (void)reachEndWithText:(NSString *)text;
 
 @optional
-- (void)setTintColor:(UIColor *)tintColor;
+- (void)setControlColor:(UIColor *)controlColor;
 
 @end
 
