@@ -1,4 +1,4 @@
-## SFPullRefresh
+## SFPullRefresh (support ios5+)
 
 SFPullRefresh provides a very simple way to implement pull refresh and load more, and supports setting the position and customizing refresh or loadmore control with your own view.
 
