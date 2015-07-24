@@ -20,14 +20,14 @@ Add pull refresh handler and load more handler to your tableView or collectionVi
 - (void)viewDidLoad
 {
   ...
-
+  __weak YourViewController *wkself = self; //you must use wkself to break the retain cycle
   [self.table sf_addRefreshHandler:^{
-      self.page = 0;
-      [self loadStrings];
+      wkself.page = 0;
+      [wkself loadStrings];
   }];
     
   [self.table sf_addLoadMoreHandler:^{
-      [self loadStrings];
+      [wkself loadStrings];
   }];
   
   ...
@@ -59,9 +59,10 @@ You can set the position, and if you want use your own refresh animation, you ca
 
     CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0,  [UIScreen mainScreen].bounds.size.width, 60)];
     
+    __weak YourViewController *wkself = self; //you must use wkself to break the retain cycle
     [self.table sf_addRefreshHandler:^{
-        self.page = 0;
-        [self loadStrings];
+        wkself.page = 0;
+        [wkself loadStrings];
     } customRefreshControl:customRefreshControl position:SFPullRefreshPositionBottom];
 
 ```
