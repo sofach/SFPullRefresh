@@ -145,7 +145,7 @@ static NSString *cellId = @"cellId";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         sleep(1.5);
         NSMutableArray *arr = [NSMutableArray array];
-        if (page<4) {
+        if (page<3) {
             for (int i=0; i<10; i++) {
                 NSMutableString *string = [NSMutableString string];
                 int count = rand()%20+1;
