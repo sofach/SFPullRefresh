@@ -2,7 +2,7 @@
 
 SFPullRefresh provides a very simple way to implement pull refresh and load more, and supports setting the position and customizing refresh or loadmore control with your own view.
 
-![image](file:///Users/shaohua/GitHub/SFPullRefresh.gif)
+![image](http://img-storage.qiniudn.com/15-7-24/31198700.jpg)
 
 ### Installation with CocoaPods
 
