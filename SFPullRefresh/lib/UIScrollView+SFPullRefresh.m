@@ -226,7 +226,11 @@ typedef enum {
         SEL extendedSelector = @selector(sf_willMoveToSuperview:);
         Method originalMethod = class_getInstanceMethod([_owner class], orignSelector);
         Method extendedMethod = class_getInstanceMethod([_owner class], extendedSelector);
-        method_exchangeImplementations(originalMethod, extendedMethod);
+        if (class_addMethod([_owner class], orignSelector,  method_getImplementation(extendedMethod),  method_getTypeEncoding(extendedMethod))) {
+            class_replaceMethod([_owner class], extendedSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+        } else {
+            method_exchangeImplementations(originalMethod, extendedMethod);
+        }
     });
     
     [_owner addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
