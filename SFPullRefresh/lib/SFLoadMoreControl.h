@@ -13,12 +13,12 @@
  */
 @protocol SFLoadMoreControlDelegate <NSObject>
 
-- (void)beginLoading;
-- (void)endLoading;
-- (void)reachEndWithText:(NSString *)text;
+- (void)beginLoading; //添加开始加载更多的效果
+- (void)endLoading; //添加结束加载更多的效果
+- (void)reachEndWithText:(NSString *)text; //添加数据加载完的效果
 
 @optional
-- (void)setControlColor:(UIColor *)controlColor;
+- (void)setControlColor:(UIColor *)controlColor; //设置颜色
 
 @end
 

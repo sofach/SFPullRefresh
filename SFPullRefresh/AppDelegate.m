@@ -28,7 +28,18 @@
     ViewController *demoVC = [[ViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:demoVC];
     navi.navigationBar.barStyle = UIBarStyleDefault;
-    self.window.rootViewController = navi;
+    
+    UITabBarItem *tabBarItem = [[UITabBarItem alloc] init];
+    tabBarItem.title = @"测试";
+    tabBarItem.image = [UIImage imageNamed:@"tabitem_normal"];
+    tabBarItem.selectedImage = [UIImage imageNamed:@"tabitem_selected"];
+    navi.tabBarItem = tabBarItem;
+    
+    UITabBarController *tabbarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
+    tabbarController.viewControllers = @[navi];
+    
+    self.window.rootViewController = tabbarController;
+
     return YES;
 }
 

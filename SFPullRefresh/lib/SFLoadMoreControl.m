@@ -43,7 +43,7 @@
     _reachEndLabel = [[UILabel alloc] initWithFrame:self.bounds];
     _reachEndLabel.backgroundColor = [UIColor clearColor];
     _reachEndLabel.font = [UIFont systemFontOfSize:15.0];
-    _reachEndLabel.textColor = self.tintColor;
+    _reachEndLabel.textColor = self.controlColor;
     _reachEndLabel.textAlignment = NSTextAlignmentCenter;
     _reachEndLabel.text = @"没有了";
     _reachEndLabel.hidden = YES;

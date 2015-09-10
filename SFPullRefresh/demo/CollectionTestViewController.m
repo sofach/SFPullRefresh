@@ -27,6 +27,8 @@
     _items = [NSMutableArray array];
     _page = 0;
     UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+    layout.minimumInteritemSpacing = 10.0;
+    layout.minimumLineSpacing = 10.0;
     _collectionView=[[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:layout];
     [_collectionView setDataSource:self];
     [_collectionView setDelegate:self];
@@ -93,25 +95,30 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
-    cell.backgroundColor = [UIColor redColor];
-//    UILabel *label = (UILabel *)[cell viewWithTag:101];
-//    if (!label) {
-//        label = [[UILabel alloc] initWithFrame:cell.bounds];
-//        [cell addSubview:label];
-//    }
-//    
-//    label.text = [_items objectAtIndex:indexPath.row];
-    return cell;
+    cell.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"%li", (long)indexPath.row%10]]];
+        return cell;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake(100, 50);
+    UIImage *img = [UIImage imageNamed:[NSString stringWithFormat:@"%li", (long)indexPath.row%10]];
+    CGSize imgSize = img.size;
+    
+    return CGSizeMake(170, 170*imgSize.height/imgSize.width);
 }
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return 10;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    return 10;
+}
+
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
-    return UIEdgeInsetsMake(5, 5, 5, 5);
+    return UIEdgeInsetsMake(10, 10, 10, 10);
 }
 
 

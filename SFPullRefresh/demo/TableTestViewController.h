@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TableTestViewController : UIViewController
+@interface TableTestViewController : UITableViewController
 
 
 @end

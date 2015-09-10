@@ -71,8 +71,6 @@
     }
 }
 
-
-
 #pragma mark - private method
 - (CAAnimation *)rotationAnimation {
     CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
@@ -120,10 +118,7 @@
 #pragma mark - SFPullRefreshControlDelegate
 - (void)willRefreshWithProgress:(CGFloat)progress
 {
-    if (progress < 1.0/RefreshLayerCount) {
-        return;
-    }
-    else if (progress>0 && progress<1) {
+    if (progress>0 && progress<1) {
         _isRotating = NO;
         [_refreshContainer removeAllAnimations];
     }

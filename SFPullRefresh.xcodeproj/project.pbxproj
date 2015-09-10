@@ -18,6 +18,7 @@
 		AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A41B5550650034F8EA /* SFRefreshControl.m */; };
 		AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */; };
 		AD1410701B60B3040089AA30 /* SFPullRefresh.podspec in Resources */ = {isa = PBXBuildFile; fileRef = AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */; };
+		AD7D69791BA1514A006D9881 /* wx@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD7D69781BA1514A006D9881 /* wx@2x.png */; };
 		ADA047DB1B62819E00F61079 /* CollectionTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA047D21B62819E00F61079 /* CollectionTestViewController.m */; };
 		ADA047DC1B62819E00F61079 /* CustomRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA047D51B62819E00F61079 /* CustomRefreshControl.m */; };
 		ADA047DD1B62819E00F61079 /* TableTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA047D71B62819E00F61079 /* TableTestViewController.m */; };
@@ -36,9 +37,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0DB608BF99A249A94EF7236F /* Pods-SFPullRefresh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SFPullRefresh.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SFPullRefresh/Pods-SFPullRefresh.debug.xcconfig"; sourceTree = "<group>"; };
-		331B6C408C389E165ECD3941 /* Pods-SFPullRefresh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SFPullRefresh.release.xcconfig"; path = "Pods/Target Support Files/Pods-SFPullRefresh/Pods-SFPullRefresh.release.xcconfig"; sourceTree = "<group>"; };
-		89BA41F42BFC2C6CAB7C9AB8 /* libPods-SFPullRefresh.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SFPullRefresh.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD01A9581B550D420034F8EA /* SFPullRefresh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SFPullRefresh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD01A95C1B550D420034F8EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AD01A95D1B550D420034F8EA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -59,6 +57,7 @@
 		AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFLoadMoreControl.h; sourceTree = "<group>"; };
 		AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFLoadMoreControl.m; sourceTree = "<group>"; };
 		AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SFPullRefresh.podspec; sourceTree = "<group>"; };
+		AD7D69781BA1514A006D9881 /* wx@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wx@2x.png"; sourceTree = "<group>"; };
 		ADA047D11B62819E00F61079 /* CollectionTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionTestViewController.h; sourceTree = "<group>"; };
 		ADA047D21B62819E00F61079 /* CollectionTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionTestViewController.m; sourceTree = "<group>"; };
 		ADA047D41B62819E00F61079 /* CustomRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomRefreshControl.h; sourceTree = "<group>"; };
@@ -88,23 +87,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		50513D2306DEC13A6E2E1125 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				0DB608BF99A249A94EF7236F /* Pods-SFPullRefresh.debug.xcconfig */,
-				331B6C408C389E165ECD3941 /* Pods-SFPullRefresh.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
-		A63FA69C5F78F3E133AC8F8F /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				89BA41F42BFC2C6CAB7C9AB8 /* libPods-SFPullRefresh.a */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		AD01A94F1B550D420034F8EA = {
 			isa = PBXGroup;
 			children = (
@@ -112,8 +94,6 @@
 				AD01A95A1B550D420034F8EA /* SFPullRefresh */,
 				AD01A9741B550D420034F8EA /* SFPullRefreshTests */,
 				AD01A9591B550D420034F8EA /* Products */,
-				50513D2306DEC13A6E2E1125 /* Pods */,
-				A63FA69C5F78F3E133AC8F8F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -146,6 +126,7 @@
 		AD01A95B1B550D420034F8EA /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				AD7D69781BA1514A006D9881 /* wx@2x.png */,
 				AD01A95C1B550D420034F8EA /* Info.plist */,
 				AD01A95D1B550D420034F8EA /* main.m */,
 			);
@@ -287,6 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD01A9671B550D420034F8EA /* Main.storyboard in Resources */,
+				AD7D69791BA1514A006D9881 /* wx@2x.png in Resources */,
 				AD01A96C1B550D420034F8EA /* LaunchScreen.xib in Resources */,
 				ADA047DF1B62819E00F61079 /* TestTableCell.xib in Resources */,
 				AD1410701B60B3040089AA30 /* SFPullRefresh.podspec in Resources */,
@@ -441,7 +423,6 @@
 		};
 		AD01A97C1B550D420034F8EA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0DB608BF99A249A94EF7236F /* Pods-SFPullRefresh.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SFPullRefresh/Info.plist;
@@ -452,7 +433,6 @@
 		};
 		AD01A97D1B550D420034F8EA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 331B6C408C389E165ECD3941 /* Pods-SFPullRefresh.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SFPullRefresh/Info.plist;

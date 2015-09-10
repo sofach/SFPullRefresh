@@ -7,24 +7,33 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="TestTableCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TVM-fA-phG">
-                        <rect key="frame" x="10" y="10" width="300" height="40"/>
+                        <rect key="frame" x="70" y="10" width="240" height="60"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wx.png" translatesAutoresizingMaskIntoConstraints="NO" id="vgS-Hv-Avk">
+                        <rect key="frame" x="10" y="10" width="54" height="54"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="54" id="DZq-ce-VdK"/>
+                            <constraint firstAttribute="height" constant="54" id="ze4-lE-Sko"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="TVM-fA-phG" secondAttribute="trailing" constant="10" id="0a2-7t-vB8"/>
                     <constraint firstItem="TVM-fA-phG" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="BLF-bL-lUe"/>
-                    <constraint firstItem="TVM-fA-phG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="JvE-Ga-RRO"/>
+                    <constraint firstItem="TVM-fA-phG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="70" id="JvE-Ga-RRO"/>
+                    <constraint firstItem="vgS-Hv-Avk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="L5W-2K-brG"/>
                     <constraint firstAttribute="bottom" secondItem="TVM-fA-phG" secondAttribute="bottom" constant="9.5" id="UA4-6O-rdY"/>
+                    <constraint firstItem="vgS-Hv-Avk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="sRy-dY-uKW"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
@@ -32,4 +41,7 @@
             </connections>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="wx.png" width="54" height="54"/>
+    </resources>
 </document>

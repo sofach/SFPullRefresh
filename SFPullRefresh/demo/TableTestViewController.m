@@ -12,12 +12,9 @@
 #import "CustomRefreshControl.h"
 #import "TestTableCell.h"
 
-@interface TableTestViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface TableTestViewController ()
 
 @property (strong, nonatomic) NSMutableArray *items;
-@property (assign, nonatomic) NSInteger page;
-
-@property (strong, nonatomic) UITableView *table;
 
 @property (strong, nonatomic) TestTableCell *heightCell;
 @end
@@ -31,29 +28,25 @@ static NSString *cellId = @"cellId";
     // Do any additional setup after loading the view.
     
     _items = [NSMutableArray array];
-    _page = 0;
-    _table = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
-    _table.dataSource = self;
-    _table.delegate = self;
-    _table.tableFooterView = [[UIView alloc] init];
-    [_table registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
+
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    [self.tableView registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
+    
 //    _table.estimatedRowHeight = 60;
-    [self.view addSubview:_table];
     
 //    CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 60)];
 //    
 //    [_table sf_addRefreshHandler:^{
 //        self.page = 0;
 //        [self loadStrings];
-//    } customRefreshControl:customRefreshControl position:SFPullRefreshPositionTop];
+//    } position:SFPullRefreshPositionTop customRefreshControl:customRefreshControl];
     
     __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
-    [_table sf_addRefreshHandler:^{
-        wkself.page = 0;
+    [self.tableView sf_addRefreshHandler:^{
         [wkself loadStrings];
     }];
     
-    [_table sf_addLoadMoreHandler:^{
+    [self.tableView sf_addLoadMoreHandler:^{
         [wkself loadStrings];
     }];
 }
@@ -81,8 +74,8 @@ static NSString *cellId = @"cellId";
 
 - (void)loadStrings
 {
-    [self requestDataAtPage:_page success:^(NSArray *strings) {
-        if (self.table.sf_isRefreshing) {
+    [self requestDataAtPage:self.tableView.sf_page success:^(NSArray *strings) {
+        if (self.tableView.sf_isRefreshing) {
             [self.items removeAllObjects];
         }
         for (NSString *str in strings) {
@@ -90,15 +83,21 @@ static NSString *cellId = @"cellId";
             [self.items addObject:str];
         }
         
-        _page++;
         if (strings.count<10) {
-            [self.table sf_reachEndWithText:@"加载完毕"];
+            [self.tableView sf_reachEndWithText:@"加载完毕"];
         }
-        [self.table sf_finishLoading];
-
+        [self.tableView sf_finishLoading];
+        if (self.items.count<=0) {
+            [self.tableView sf_showHints:@"没有数据"];
+        }
     } failure:^(NSString *msg) {
         [self.items removeAllObjects];
-        [self.table sf_finishLoading];
+        [self.tableView sf_finishLoading];
+        //可以使用自定义的提示界面
+//        UIView *hintsView = [[UIView alloc] initWithFrame:self.tableView.bounds];
+//        hintsView.backgroundColor = [UIColor greenColor];
+//        [self.tableView sf_showHintsView:hintsView];
+        [self.tableView sf_showHints:msg];
     }];
 }
 
@@ -118,12 +117,10 @@ static NSString *cellId = @"cellId";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!_heightCell) {
-        _heightCell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    }
-    [_heightCell setString:[_items objectAtIndex:indexPath.row]];
-    CGSize size = [_heightCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return size.height+1;
+    TestTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+    [cell setString:[_items objectAtIndex:indexPath.row]];
+    CGSize size = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    return size.height<74?74:size.height+1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -136,8 +133,13 @@ static NSString *cellId = @"cellId";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-//    [self.table sf_refreshAnimated:YES];
-    [self.table sf_loadMoreAnimated:YES];
+    if (indexPath.row == 0) {
+        [self.tableView sf_refreshAnimated:YES];
+    } else {
+        [self.tableView sf_loadMoreAnimated:YES];
+    }
+    
+//    [self.tableView sf_loadMoreAnimated:YES];
 }
 
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
@@ -163,8 +165,8 @@ static NSString *cellId = @"cellId";
         else
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (success) {
-                    success(arr);
+                if (failure) {
+                    failure(@"服务器错误！");
                 }
             });
         }
