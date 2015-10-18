@@ -10,6 +10,7 @@
 
 @interface TestTableCell ()
 @property (weak, nonatomic) IBOutlet UILabel *label;
+@property (weak, nonatomic) IBOutlet UIImageView *iconImgView;
 
 @end
 
@@ -18,6 +19,8 @@
 - (void)awakeFromNib {
     // Initialization code
     _label.preferredMaxLayoutWidth = [UIScreen mainScreen].bounds.size.width-20;
+    _iconImgView.contentMode = UIViewContentModeScaleAspectFill;
+    _iconImgView.clipsToBounds = YES;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -26,8 +29,9 @@
     // Configure the view for the selected state
 }
 
-- (void)setString:(NSString *)str
+- (void)setIcon:(NSString *)iconName string:(NSString *)str
 {
+    _iconImgView.image = [UIImage imageNamed:iconName];
     _label.text = str;
 }
 

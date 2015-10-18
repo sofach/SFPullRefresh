@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import "TableTestViewController.h"
+#import "CollectionTestViewController.h"
 
 @interface AppDelegate ()
 
@@ -24,21 +26,23 @@
     self.window.backgroundColor = [UIColor blackColor];
     [self.window makeKeyAndVisible];
     
+    TableTestViewController *tableVC = [[TableTestViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *tableNavi = [[UINavigationController alloc] initWithRootViewController:tableVC];
+    UITabBarItem *tableBarItem = [[UITabBarItem alloc] init];
+    tableBarItem.title = @"table";
+    tableNavi.tabBarItem = tableBarItem;
     
-    ViewController *demoVC = [[ViewController alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:demoVC];
-    navi.navigationBar.barStyle = UIBarStyleDefault;
+    UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+    CollectionTestViewController *collectionVC = [[CollectionTestViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *collectionNavi = [[UINavigationController alloc] initWithRootViewController:collectionVC];
+    UITabBarItem *collectionBarItem = [[UITabBarItem alloc] init];
+    collectionBarItem.title = @"collection";
+    collectionNavi.tabBarItem = collectionBarItem;
     
-    UITabBarItem *tabBarItem = [[UITabBarItem alloc] init];
-    tabBarItem.title = @"测试";
-    tabBarItem.image = [UIImage imageNamed:@"tabitem_normal"];
-    tabBarItem.selectedImage = [UIImage imageNamed:@"tabitem_selected"];
-    navi.tabBarItem = tabBarItem;
+    UITabBarController *tabController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
+    tabController.viewControllers = @[tableNavi, collectionNavi];
     
-    UITabBarController *tabbarController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
-    tabbarController.viewControllers = @[navi];
-    
-    self.window.rootViewController = tabbarController;
+    self.window.rootViewController = tabController;
 
     return YES;
 }

@@ -18,14 +18,14 @@ typedef enum{
 @interface UIScrollView (SFPullRefresh)
 
 /**
- *  添加刷新功能
+ *  添加刷新功能，必须在加到superView之前调用
  *
  *  @param refreshHandler 刷新的处理
  */
 - (void)sf_addRefreshHandler:(void(^)(void))refreshHandler;
 
 /**
- *  添加刷新功能
+ *  添加刷新功能，必须在加到superView之前调用
  *
  *  @param refreshHandler       刷新的处理
  *  @param position             刷新的位置，可以选择放在顶部或者底部
@@ -33,7 +33,7 @@ typedef enum{
 - (void)sf_addRefreshHandler:(void(^)(void))refreshHandler position:(SFPullRefreshPosition)position;
 
 /**
- *  添加刷新功能
+ *  添加刷新功能，必须在加到superView之前调用
  *
  *  @param refreshHandler       刷新的处理
  *  @param position             刷新的位置，可以选择放在顶部或者底部
@@ -42,14 +42,14 @@ typedef enum{
 - (void)sf_addRefreshHandler:(void(^)(void))refreshHandler position:(SFPullRefreshPosition)position customRefreshControl:(UIView<SFRefreshControlDelegate> *)customRefreshControl;
 
 /**
- *  添加加载更多功能
+ *  添加加载更多功能，必须在加到superView之前调用
  *
  *  @param loadMoreHandler 加载更多的处理
  */
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler;
 
 /**
- *  添加加载更多功能
+ *  添加加载更多功能，必须在加到superView之前调用
  *
  *  @param loadMoreHandler       加载更多的处理
  *  @param position              刷新的位置，可以选择放在顶部或者底部
@@ -57,7 +57,7 @@ typedef enum{
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler position:(SFPullRefreshPosition)position;
 
 /**
- *  添加加载更多功能
+ *  添加加载更多功能，必须在加到superView之前调用
  *
  *  @param loadMoreHandler       加载更多的处理
  *  @param position              加载更多的位置，可以选择放在顶部或者底部
@@ -119,6 +119,11 @@ typedef enum{
  *  @param hintsView 提示界面
  */
 - (void)sf_showHintsView:(UIView *)hintsView;
+
+/**
+ *  是否自动刷新
+ */
+- (void)sf_autoRefresh:(BOOL)autoRefresh;
 
 /**
  *  设置refreshControl和loadMoreControl的颜色

@@ -11,12 +11,13 @@
 #import "UIScrollView+SFPullRefresh.h"
 #import "CustomRefreshControl.h"
 #import "TestTableCell.h"
+#import "TableTestViewController.h"
 
-@interface TableTestViewController ()
+@interface TableTestViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) NSMutableArray *items;
 
-@property (strong, nonatomic) TestTableCell *heightCell;
+@property (strong, nonatomic) UITableView *tableView;
 @end
 
 @implementation TableTestViewController
@@ -28,10 +29,11 @@ static NSString *cellId = @"cellId";
     // Do any additional setup after loading the view.
     
     _items = [NSMutableArray array];
-
+    self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.tableView registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
-    
 //    _table.estimatedRowHeight = 60;
     
 //    CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 60)];
@@ -40,8 +42,10 @@ static NSString *cellId = @"cellId";
 //        self.page = 0;
 //        [self loadStrings];
 //    } position:SFPullRefreshPositionTop customRefreshControl:customRefreshControl];
-    
+//    [self loadStrings];
+
     __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
+    //以下调用必须在 [self.view addSubview:self.tableView];之前
     [self.tableView sf_addRefreshHandler:^{
         [wkself loadStrings];
     }];
@@ -49,6 +53,9 @@ static NSString *cellId = @"cellId";
     [self.tableView sf_addLoadMoreHandler:^{
         [wkself loadStrings];
     }];
+    
+    [self.view addSubview:self.tableView];
+
 }
 
 - (void)testBlock:(void(^)(void))block
@@ -60,12 +67,6 @@ static NSString *cellId = @"cellId";
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
 
 - (void)dealloc
 {
@@ -117,29 +118,19 @@ static NSString *cellId = @"cellId";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    TestTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    [cell setString:[_items objectAtIndex:indexPath.row]];
-    CGSize size = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-    return size.height<74?74:size.height+1;
+    return 85;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     TestTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    [cell setString:[_items objectAtIndex:indexPath.row]];
+    [cell setIcon:[NSString stringWithFormat:@"%li", indexPath.row%10] string:_items[indexPath.row]];
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.row == 0) {
-        [self.tableView sf_refreshAnimated:YES];
-    } else {
-        [self.tableView sf_loadMoreAnimated:YES];
-    }
-    
-//    [self.tableView sf_loadMoreAnimated:YES];
 }
 
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
@@ -149,12 +140,7 @@ static NSString *cellId = @"cellId";
         NSMutableArray *arr = [NSMutableArray array];
         if (page<3) {
             for (int i=0; i<10; i++) {
-                NSMutableString *string = [NSMutableString string];
-                int count = rand()%20+1;
-                for (int j=0; j<count; j++) {
-                    [string appendFormat:@"this is row%ld", i+page*10];
-                }
-                [arr addObject:string];
+                [arr addObject:[NSString stringWithFormat:@"this is row%ld", i+page*10]];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success) {
@@ -165,10 +151,15 @@ static NSString *cellId = @"cellId";
         else
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (failure) {
-                    failure(@"服务器错误！");
+                if (success) {
+                    success(arr);
                 }
             });
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                if (failure) {
+//                    failure(@"服务器错误！");
+//                }
+//            });
         }
         
     });

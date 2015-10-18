@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -10,7 +11,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="79.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TVM-fA-phG">
@@ -20,7 +21,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wx.png" translatesAutoresizingMaskIntoConstraints="NO" id="vgS-Hv-Avk">
-                        <rect key="frame" x="10" y="10" width="54" height="54"/>
+                        <rect key="frame" x="10" y="13" width="54" height="54"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="54" id="DZq-ce-VdK"/>
                             <constraint firstAttribute="height" constant="54" id="ze4-lE-Sko"/>
@@ -33,10 +34,17 @@
                     <constraint firstItem="TVM-fA-phG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="70" id="JvE-Ga-RRO"/>
                     <constraint firstItem="vgS-Hv-Avk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="L5W-2K-brG"/>
                     <constraint firstAttribute="bottom" secondItem="TVM-fA-phG" secondAttribute="bottom" constant="9.5" id="UA4-6O-rdY"/>
+                    <constraint firstItem="vgS-Hv-Avk" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="eRX-op-YZ4"/>
                     <constraint firstItem="vgS-Hv-Avk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="sRy-dY-uKW"/>
                 </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="L5W-2K-brG"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
             <connections>
+                <outlet property="iconImgView" destination="vgS-Hv-Avk" id="soj-kW-0yG"/>
                 <outlet property="label" destination="TVM-fA-phG" id="ILe-zj-aFZ"/>
             </connections>
         </tableViewCell>

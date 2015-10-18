@@ -66,6 +66,7 @@
         layer.anchorPoint = CGPointMake(0.5, 1+3/4.0);
         layer.allowsEdgeAntialiasing = YES;
         layer.cornerRadius = 1.0f;
+        layer.hidden = YES;
         layer.transform = CATransform3DMakeRotation(M_PI*i/6, 0, 0, 1);
         [_loadingContainer addSublayer:layer];
         [_loadingLayers addObject:layer];

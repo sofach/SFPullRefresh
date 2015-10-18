@@ -10,5 +10,5 @@
 
 @interface TestTableCell : UITableViewCell
 
-- (void)setString:(NSString *)str;
+- (void)setIcon:(NSString *)iconName string:(NSString *)str;
 @end

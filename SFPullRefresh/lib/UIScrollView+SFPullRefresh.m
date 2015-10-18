@@ -14,7 +14,7 @@
 @property (weak, nonatomic) UIScrollView *owner;
 @property (assign, nonatomic) NSUInteger page;
 @property (assign, nonatomic) BOOL isRefreshing;
-@property (assign, nonatomic) BOOL autoLoading;
+@property (assign, nonatomic) BOOL autoRefresh;
 @property (assign, nonatomic) UIEdgeInsets orignInset;
 
 - (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void(^)(void))refreshHandler atPosition:(SFPullRefreshPosition)position;
@@ -113,6 +113,14 @@
     return self.context.page;
 }
 
+- (void)sf_autoRefresh:(BOOL)autoRefresh {
+    if (!self.context) {
+        self.context = [[SFPullRefreshContext alloc] init];
+        self.context.owner = self;
+    }
+    self.context.autoRefresh = autoRefresh;
+}
+
 - (void)sf_finishLoading {
     [self.context finishLoading];
 }
@@ -149,6 +157,7 @@
         if (self.superview) {
             [self.context removeObservers];
         }
+
         if (newSuperView) {
             [self.context addObservers];
             self.context.orignInset = self.contentInset;
@@ -185,7 +194,7 @@ typedef enum {
 @interface SFPullRefreshContext ()
 
 @property (assign, nonatomic) CGFloat preHeight;
-
+@property (assign, nonatomic) BOOL insetChanged;
 @property (assign, nonatomic) SFPullRefreshState refreshState;
 @property (assign, nonatomic) SFPullRefreshState loadMoreState;
 
@@ -211,8 +220,8 @@ typedef enum {
     if (self) {
         _page = 0;
         _preHeight = 0;
-        _autoLoading = YES;
-        _orignInset.left = CGFLOAT_MAX;
+        _autoRefresh = YES;
+        _orignInset.top = -1;
         _refreshPosition = SFPullRefreshPositionTop;
         _loadMorePosition = SFPullRefreshPositionBottom;
     }
@@ -224,7 +233,7 @@ typedef enum {
 #pragma mark - getter setter
 - (UILabel *)hintsLabel {
     if (!_hintsLabel) {
-        _hintsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, _owner.frame.size.width, _owner.frame.size.height-_orignInset.top-_orignInset.bottom)];
+        _hintsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, _owner.frame.size.width, _owner.frame.size.height/2-_orignInset.top-_orignInset.bottom)];
         _hintsLabel.textColor = [UIColor colorWithWhite:0.5 alpha:1.0];
         _hintsLabel.textAlignment = NSTextAlignmentCenter;
         _hintsLabel.numberOfLines = 0;
@@ -241,7 +250,7 @@ typedef enum {
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        Class class = [_owner class];
+        Class class = [UIScrollView class];
         
         SEL originalSelector = @selector(willMoveToSuperview:);
         SEL swizzledSelector = @selector(sf_willMoveToSuperview:);
@@ -260,9 +269,6 @@ typedef enum {
 
 - (void)setOrignInset:(UIEdgeInsets)orignInset
 {
-    if (_orignInset.left < 10000000.0) {
-        return;
-    }
     _orignInset = orignInset;
     if (_refreshControl) {
         
@@ -274,7 +280,7 @@ typedef enum {
             frame.origin.y = [self ownerContentHeight];
         }
         _refreshControl.frame = frame;
-        if (self.autoLoading) { //自动刷新
+        if (self.autoRefresh) { //自动刷新
             [self refreshAnimated:YES];
         }
     }
@@ -335,9 +341,13 @@ typedef enum {
     }
 }
 
+- (void)setOwnerInset:(UIEdgeInsets)inset {
+    self.insetChanged = YES;
+    self.owner.contentInset = inset;
+}
+
 - (void)beginLoadMore {
     self.loadMoreState = SFPullRefreshStateLoading;
-    
     if ([self.loadMoreControl respondsToSelector:@selector(beginLoading)]) {
         [self.loadMoreControl beginLoading];
     }
@@ -386,9 +396,6 @@ typedef enum {
 
 - (void)finishLoading
 {
-    if ([self.owner respondsToSelector:@selector(reloadData)]) {
-        [self.owner performSelector:@selector(reloadData)];
-    }
     if (_hintsLabel) {
         [_hintsView removeFromSuperview];
     }
@@ -408,9 +415,15 @@ typedef enum {
         self.refreshState = SFPullRefreshStateNormal;
         self.isRefreshing = NO;
     }
-    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        self.owner.contentInset = self.orignInset;
-    } completion:nil];
+    [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        UIEdgeInsets insets = self.orignInset;
+        insets.bottom = self.owner.contentInset.bottom;
+        [self setOwnerInset:insets];
+    } completion:^(BOOL com){
+        if ([self.owner respondsToSelector:@selector(reloadData)]) {
+            [self.owner performSelector:@selector(reloadData)];
+        }
+    }];
 }
 
 - (void)refreshAnimated:(BOOL)animated
@@ -462,7 +475,6 @@ typedef enum {
             }];
         }
     }
-
 }
 
 - (void)reachEndWithText:(NSString *)text
@@ -474,7 +486,6 @@ typedef enum {
         if ([self.loadMoreControl respondsToSelector:@selector(reachEndWithText:)]) {
             [self.loadMoreControl reachEndWithText:text];
         }
-        
         self.loadMoreState = SFPullRefreshStateReachEnd;
     }
 }
@@ -501,12 +512,15 @@ typedef enum {
 
 - (void)addObservers {
     [self.owner addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    [self.owner addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:nil];
+
     [self.owner addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
     [self.owner.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)removeObservers {
     [self.owner removeObserver:self forKeyPath:@"contentSize"];
+    [self.owner removeObserver:self forKeyPath:@"contentInset"];
     [self.owner removeObserver:self forKeyPath:@"contentOffset"];
     [self.owner.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
 }
@@ -549,7 +563,6 @@ typedef enum {
                         self.owner.contentOffset = offset;
                     }
                 }
-                
             }
             if (self.refreshControl && self.refreshPosition == SFPullRefreshPositionBottom) {
                 CGRect frame = self.refreshControl.frame;
@@ -557,14 +570,20 @@ typedef enum {
                 self.refreshControl.frame = frame;
             }
         } else if ([keyPath isEqualToString:@"contentOffset"]) {
-            
+
             [self tableViewDidScroll];
+        } else if ([keyPath isEqualToString:@"contentInset"]) {
+            if (!self.insetChanged) { //仅仅是willMoveToView时设置originInset不够。手动修改的inset，不记录
+                self.orignInset = self.owner.contentInset;
+            }
         }
     } else if (object == self.owner.panGestureRecognizer) {
         if ([keyPath isEqualToString:@"state"] && self.owner.panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             
             [self tableViewDidEndDragging];
         }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
@@ -612,11 +631,11 @@ typedef enum {
         
         if (self.loadMorePosition == SFPullRefreshPositionTop) {
             CGFloat yMargin = self.owner.contentOffset.y+self.orignInset.top;
-            if (yMargin < 0 && self.loadMoreState != SFPullRefreshStateLoading) {
+            if (yMargin < -5 && self.loadMoreState != SFPullRefreshStateLoading) {
                 
                 [self beginLoadMore];
                 [UIView animateWithDuration:0.1 animations:^{
-                    self.owner.contentInset = UIEdgeInsetsMake(self.loadMoreControl.frame.size.height+self.orignInset.top, self.orignInset.right, self.orignInset.bottom, self.orignInset.left);
+                    [self setOwnerInset:UIEdgeInsetsMake(self.loadMoreControl.frame.size.height+self.orignInset.top, self.orignInset.right, self.orignInset.bottom, self.orignInset.left)];
                 }];
             }
         } else {
@@ -624,12 +643,12 @@ typedef enum {
             CGFloat contentHeight = [self ownerContentHeight];
             CGFloat yMargin = self.owner.contentOffset.y + self.owner.frame.size.height - contentHeight - self.orignInset.bottom;
             
-            if ( yMargin > 0 && self.loadMoreState != SFPullRefreshStateLoading) {  //footer will appeared
+            if ( yMargin > 5 && self.loadMoreState != SFPullRefreshStateLoading) {  //footer will appeared
                 
                 [self beginLoadMore];
                 
                 [UIView animateWithDuration:0.1 animations:^{
-                    self.owner.contentInset = UIEdgeInsetsMake(self.orignInset.top, self.orignInset.right, self.loadMoreControl.frame.size.height+self.orignInset.bottom, self.orignInset.left);
+                    [self setOwnerInset:UIEdgeInsetsMake(self.orignInset.top, self.orignInset.right, self.loadMoreControl.frame.size.height+self.orignInset.bottom, self.orignInset.left)];
                 }];
             }
         }
@@ -647,14 +666,14 @@ typedef enum {
             if (self.refreshPosition == SFPullRefreshPositionTop) {
                 UIEdgeInsets inset = self.owner.contentInset;
                 inset.top = self.refreshControl.frame.size.height+self.orignInset.top;
-                self.owner.contentInset = inset;
+                [self setOwnerInset:inset];
             } else {
                 UIEdgeInsets inset = self.owner.contentInset;
                 //当内容太小时，设置insetbottom会导致下降，原因未知，当显示hintsView时还是有点问题
                 if (self.owner.contentSize.height+self.orignInset.top+self.orignInset.bottom>self.owner.frame.size.height) {
                     inset.bottom = self.refreshControl.frame.size.height+self.orignInset.bottom;
                 }
-                self.owner.contentInset = inset;
+                [self setOwnerInset:inset];
             }
         } completion:nil];
     }
