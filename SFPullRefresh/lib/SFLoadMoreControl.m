@@ -115,8 +115,7 @@
 - (void)reachEndWithText:(NSString *)text
 {
     _reachEndLabel.hidden = NO;
-    _reachEndLabel.text = text;
-
+    _reachEndLabel.text = text?text:@"";
 }
 
 - (void)setReachEndText:(NSString *)reachedEndText

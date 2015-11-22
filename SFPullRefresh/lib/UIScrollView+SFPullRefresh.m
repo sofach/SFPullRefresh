@@ -25,12 +25,15 @@
 
 - (void)loadMoreAnimated:(BOOL)animated;
 
-- (void)reachEndWithText:(NSString *)text;
-
 - (void)finishLoading;
+
+- (void)reachEndWithText:(NSString *)text;
+- (void)reachEndWithView:(UIView *)view;
 
 - (void)showHints:(NSString *)hints;
 - (void)showHintsView:(UIView *)hintsView;
+
+- (void)restartAnimation;
 
 - (void)setControlColor:(UIColor *)controlColor;
 
@@ -42,21 +45,21 @@
 
 @interface UIScrollView ()
 
-@property (strong, nonatomic) SFPullRefreshContext *context;
+@property (strong, nonatomic) SFPullRefreshContext *sf_pullRefreshContext;
 
 @end
 
 @implementation UIScrollView (SFPullRefresh)
 
 #pragma mark getter setter
-- (SFPullRefreshContext *)context {
-    return objc_getAssociatedObject(self, @selector(context));
+- (SFPullRefreshContext *)sf_pullRefreshContext {
+    return objc_getAssociatedObject(self, @selector(sf_pullRefreshContext));
 }
 
-- (void)setContext:(SFPullRefreshContext *)context {
-    [self willChangeValueForKey:@"context"]; // KVO
-    objc_setAssociatedObject(self, @selector(context), context, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"context"]; // KVO
+- (void)setSf_pullRefreshContext:(SFPullRefreshContext *)sf_pullRefreshContext {
+    [self willChangeValueForKey:@"sf_pullRefreshContext"]; // KVO
+    objc_setAssociatedObject(self, @selector(sf_pullRefreshContext), sf_pullRefreshContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self didChangeValueForKey:@"sf_pullRefreshContext"]; // KVO
 }
 
 #pragma mark - public method
@@ -69,20 +72,17 @@
 }
 
 - (void)sf_addRefreshHandler:(void(^)(void))refreshHandler position:(SFPullRefreshPosition)position customRefreshControl:(UIView<SFRefreshControlDelegate> *)customRefreshControl {
-    if (![self respondsToSelector:@selector(backgroundView)]) {
-        return;
-    }
-    
-    if (!self.context) {
-        self.context = [[SFPullRefreshContext alloc] init];
-        self.context.owner = self;
+
+    if (!self.sf_pullRefreshContext) {
+        self.sf_pullRefreshContext = [[SFPullRefreshContext alloc] init];
+        self.sf_pullRefreshContext.owner = self;
     }
     
     if (!customRefreshControl) {
         customRefreshControl = [[SFRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)];
     }
     
-    [self.context setRefreshControl:customRefreshControl withRefreshHandler:refreshHandler atPosition:position];
+    [self.sf_pullRefreshContext setRefreshControl:customRefreshControl withRefreshHandler:refreshHandler atPosition:position];
 }
 
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler {
@@ -94,75 +94,87 @@
 }
 
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler position:(SFPullRefreshPosition)position customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl {
-    if (!self.context) {
-        self.context = [[SFPullRefreshContext alloc] init];
-        self.context.owner = self;
+    if (!self.sf_pullRefreshContext) {
+        self.sf_pullRefreshContext = [[SFPullRefreshContext alloc] init];
+        self.sf_pullRefreshContext.owner = self;
     }
 
     if (!customLoadMoreControl) {
-        customLoadMoreControl = [[SFLoadMoreControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 49)];
+        customLoadMoreControl = [[SFLoadMoreControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 50)];
     }
-    [self.context setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler atPosition:position];
+    [self.sf_pullRefreshContext setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler atPosition:position];
 }
 
 - (BOOL)sf_isRefreshing {
-    return self.context.isRefreshing;
+    return self.sf_pullRefreshContext.isRefreshing;
 }
 
 - (NSUInteger)sf_page {
-    return self.context.page;
+    return self.sf_pullRefreshContext.page;
 }
 
 - (void)sf_autoRefresh:(BOOL)autoRefresh {
-    if (!self.context) {
-        self.context = [[SFPullRefreshContext alloc] init];
-        self.context.owner = self;
+    if (!self.sf_pullRefreshContext) {
+        self.sf_pullRefreshContext = [[SFPullRefreshContext alloc] init];
+        self.sf_pullRefreshContext.owner = self;
     }
-    self.context.autoRefresh = autoRefresh;
+    self.sf_pullRefreshContext.autoRefresh = autoRefresh;
 }
 
 - (void)sf_finishLoading {
-    [self.context finishLoading];
+    [self.sf_pullRefreshContext finishLoading];
 }
 
 - (void)sf_refreshAnimated:(BOOL)animated {
-    [self.context refreshAnimated:animated];
+    [self.sf_pullRefreshContext refreshAnimated:animated];
 }
 
 - (void)sf_loadMoreAnimated:(BOOL)animated {
-    [self.context loadMoreAnimated:animated];
+    [self.sf_pullRefreshContext loadMoreAnimated:animated];
 }
 
 - (void)sf_reachEndWithText:(NSString *)text {
-    [self.context reachEndWithText:text];
+    [self.sf_pullRefreshContext reachEndWithText:text];
+}
+
+- (void)sf_reachEndWithView:(UIView *)view {
+    [self.sf_pullRefreshContext reachEndWithView:view];
 }
 
 - (void)sf_showHints:(NSString *)hints {
-    [self.context showHints:hints];
+    [self.sf_pullRefreshContext showHints:hints];
 }
 
 - (void)sf_showHintsView:(UIView *)hintsView {
-    [self.context showHintsView:hintsView];
+    [self.sf_pullRefreshContext showHintsView:hintsView];
 }
 
 - (void)sf_setControlColor:(UIColor *)controlColor {
-    [self.context setControlColor:controlColor];
+    [self.sf_pullRefreshContext setControlColor:controlColor];
 }
 
 - (void)sf_willMoveToSuperview:(UIView *)newSuperView {
     [self sf_willMoveToSuperview:newSuperView];
     
-    if (self.context) {
+    if (self.sf_pullRefreshContext) {
         
         if (self.superview) {
-            [self.context removeObservers];
+            [self.sf_pullRefreshContext removeObservers];
         }
 
         if (newSuperView) {
-            [self.context addObservers];
-            self.context.orignInset = self.contentInset;
+            [self.sf_pullRefreshContext addObservers];
+            self.sf_pullRefreshContext.orignInset = self.contentInset;
         }
     }
+}
+
+- (void)sf_willMoveToWindow:(UIWindow *)newWindow {
+    [self sf_willMoveToWindow:newWindow];
+    if (self.sf_pullRefreshContext) {
+        [self.sf_pullRefreshContext restartAnimation];
+    }
+    
 }
 
 @end
@@ -209,6 +221,7 @@ typedef enum {
 
 @property (strong, nonatomic) UILabel *hintsLabel;
 @property (strong, nonatomic) UIView *hintsView;
+@property (strong, nonatomic) UIView *reachEndView;
 
 @end
 
@@ -251,24 +264,29 @@ typedef enum {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         Class class = [UIScrollView class];
-        
-        SEL originalSelector = @selector(willMoveToSuperview:);
-        SEL swizzledSelector = @selector(sf_willMoveToSuperview:);
-        
-        Method originalMethod = class_getInstanceMethod(class, originalSelector);
-        Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-        
-        BOOL success = class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
-        if (success) {
-            class_replaceMethod(class, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod);
-        }
+        [SFPullRefreshContext replaceSelector:@selector(willMoveToWindow:) toSelector:@selector(sf_willMoveToWindow:) forClass:class]; //为了切换view，重启动画
+        [SFPullRefreshContext replaceSelector:@selector(willMoveToSuperview:) toSelector:@selector(sf_willMoveToSuperview:) forClass:class];
     });
+}
+
++ (void)replaceSelector:(SEL)originalSelector toSelector:(SEL)swizzledSelector forClass:(Class)cls {
+    Method originalMethod = class_getInstanceMethod(cls, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(cls, swizzledSelector);
+    
+    BOOL success = class_addMethod(cls, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));
+    if (success) {
+        class_replaceMethod(cls, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+    } else {
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
 }
 
 - (void)setOrignInset:(UIEdgeInsets)orignInset
 {
+    //这里对UITableViewController支持的不大好，不知道什么原因，当在外部设置tableView.contentInsets时，UITableViewController直接加上了透明的navigationBar的高度，导致下移多下移了64
+//    if (_orignInset.top > 0.0) {
+//        return;
+//    }
     _orignInset = orignInset;
     if (_refreshControl) {
         
@@ -308,23 +326,23 @@ typedef enum {
     return height;
 }
 
-- (NSInteger)totalItems
-{
-    NSInteger totalItems = 0;
-    if ([self.owner isKindOfClass:[UITableView class]]) {
-        UITableView *tableView = (UITableView *)self.owner;
-        for (NSInteger section = 0; section<tableView.numberOfSections; section++) {
-            totalItems += [tableView numberOfRowsInSection:section];
-        }
-    } else if ([self.owner isKindOfClass:[UICollectionView class]]) {
-        UICollectionView *collectionView = (UICollectionView *)self.owner;
-        
-        for (NSInteger section = 0; section<collectionView.numberOfSections; section++) {
-            totalItems += [collectionView numberOfItemsInSection:section];
-        }
-    }
-    return totalItems;
-}
+//- (NSInteger)totalItems
+//{
+//    NSInteger totalItems = 0;
+//    if ([self.owner isKindOfClass:[UITableView class]]) {
+//        UITableView *tableView = (UITableView *)self.owner;
+//        for (NSInteger section = 0; section<tableView.numberOfSections; section++) {
+//            totalItems += [tableView numberOfRowsInSection:section];
+//        }
+//    } else if ([self.owner isKindOfClass:[UICollectionView class]]) {
+//        UICollectionView *collectionView = (UICollectionView *)self.owner;
+//        
+//        for (NSInteger section = 0; section<collectionView.numberOfSections; section++) {
+//            totalItems += [collectionView numberOfItemsInSection:section];
+//        }
+//    }
+//    return totalItems;
+//}
 
 - (void)beginRefresh {
     self.isRefreshing = YES;
@@ -347,6 +365,9 @@ typedef enum {
 }
 
 - (void)beginLoadMore {
+    if (self.reachEndView && self.reachEndView.superview) {
+        [self.reachEndView removeFromSuperview];
+    }
     self.loadMoreState = SFPullRefreshStateLoading;
     if ([self.loadMoreControl respondsToSelector:@selector(beginLoading)]) {
         [self.loadMoreControl beginLoading];
@@ -358,6 +379,15 @@ typedef enum {
             
         }
         self.loadMoreHandler();
+    }
+}
+
+- (void)restartAnimation {
+    if (self.loadMoreControl && self.loadMoreState == SFPullRefreshStateLoading) {
+        [self.loadMoreControl beginLoading];
+    }
+    if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
+        [self.refreshControl beginRefreshing];
     }
 }
 
@@ -396,9 +426,10 @@ typedef enum {
 
 - (void)finishLoading
 {
-    if (_hintsLabel) {
+    if (_hintsView) {
         [_hintsView removeFromSuperview];
     }
+    
     if (self.loadMoreControl) {
         if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
             [self.loadMoreControl endLoading];
@@ -486,6 +517,30 @@ typedef enum {
         if ([self.loadMoreControl respondsToSelector:@selector(reachEndWithText:)]) {
             [self.loadMoreControl reachEndWithText:text];
         }
+        
+        [UIView animateWithDuration:.25 animations:^{
+            [self setOwnerInset:self.orignInset];
+        }];
+        self.loadMoreState = SFPullRefreshStateReachEnd;
+    }
+}
+
+- (void)reachEndWithView:(UIView *)view
+{
+    if (self.loadMoreControl) {
+        if (self.reachEndView && self.reachEndView.superview) {
+            [self.reachEndView removeFromSuperview];
+        }
+        self.reachEndView = view;
+        [self.loadMoreControl addSubview:self.reachEndView];
+        [self.reachEndView setFrame:self.loadMoreControl.bounds];
+        if ([self.loadMoreControl respondsToSelector:@selector(reachEndWithText:)]) {
+            [self.loadMoreControl reachEndWithText:nil];
+        }
+        
+        [UIView animateWithDuration:.25 animations:^{
+            [self setOwnerInset:self.orignInset];
+        }];
         self.loadMoreState = SFPullRefreshStateReachEnd;
     }
 }
@@ -496,6 +551,9 @@ typedef enum {
 }
 
 - (void)showHintsView:(UIView *)hintsView {
+    if (self.hintsView && self.hintsView.superview) {
+        [self.hintsView removeFromSuperview];
+    }
     self.hintsView = hintsView;
     [self.owner addSubview:self.hintsView];
 }
@@ -631,7 +689,7 @@ typedef enum {
         
         if (self.loadMorePosition == SFPullRefreshPositionTop) {
             CGFloat yMargin = self.owner.contentOffset.y+self.orignInset.top;
-            if (yMargin < -5 && self.loadMoreState != SFPullRefreshStateLoading) {
+            if (yMargin < -5) {
                 
                 [self beginLoadMore];
                 [UIView animateWithDuration:0.1 animations:^{
@@ -643,7 +701,7 @@ typedef enum {
             CGFloat contentHeight = [self ownerContentHeight];
             CGFloat yMargin = self.owner.contentOffset.y + self.owner.frame.size.height - contentHeight - self.orignInset.bottom;
             
-            if ( yMargin > 5 && self.loadMoreState != SFPullRefreshStateLoading) {  //footer will appeared
+            if ( yMargin > 0) {  //footer will appeared
                 
                 [self beginLoadMore];
                 

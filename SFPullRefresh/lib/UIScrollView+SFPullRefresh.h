@@ -105,6 +105,11 @@ typedef enum{
 - (void)sf_reachEndWithText:(NSString *)text;
 
 /**
+ *  自定义到达底部的view，需要在数据加载完时调用。
+ */
+- (void)sf_reachEndWithView:(UIView *)view;
+
+/**
  *  显示提示语，可用于数据为空，或者请求错误的提示语
  *  注意，必须得在sf_finishLoading之后调用
  *
