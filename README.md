@@ -1,6 +1,6 @@
 ## SFPullRefresh (support ios5+)
 
-SFPullRefresh provides a very simple way to implement pull refresh and load more, and supports setting the position and customizing refresh or loadmore control with your own view.
+SFPullRefresh provides a very simple way to implement pull refresh and load more, supports customizing refresh or loadmore control with your own view.
 
 ![image](http://img-storage.qiniudn.com/15-7-24/31198700.jpg)
 
@@ -54,7 +54,7 @@ Add pull refresh handler and load more handler to your tableView or collectionVi
 }
 ```
 #### Customization
-You can set the position, and if you want use your own refresh animation, you can customize refresh or load more control with your own view.
+You can customize refresh or load more control with your own view.
 
 ```objective-c
 
@@ -64,7 +64,7 @@ You can set the position, and if you want use your own refresh animation, you ca
     [self.table sf_addRefreshHandler:^{
         wkself.page = 0;
         [wkself loadStrings];
-    } customRefreshControl:customRefreshControl position:SFPullRefreshPositionBottom];
+    } customRefreshControl:customRefreshControl];
 
 ```
 The custom view must conforms to protocol SFRefreshControlDelegate or SFLoadMoreControlDelegate.
