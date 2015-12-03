@@ -10,11 +10,6 @@
 #import "SFRefreshControl.h"
 #import "SFLoadMoreControl.h"
 
-typedef enum{
-    SFPullRefreshPositionTop = 1,
-    SFPullRefreshPositionBottom = -1
-} SFPullRefreshPosition;
-
 @interface UIScrollView (SFPullRefresh)
 
 /**
@@ -28,18 +23,9 @@ typedef enum{
  *  添加刷新功能，必须在加到superView之前调用
  *
  *  @param refreshHandler       刷新的处理
- *  @param position             刷新的位置，可以选择放在顶部或者底部
- */
-- (void)sf_addRefreshHandler:(void(^)(void))refreshHandler position:(SFPullRefreshPosition)position;
-
-/**
- *  添加刷新功能，必须在加到superView之前调用
- *
- *  @param refreshHandler       刷新的处理
- *  @param position             刷新的位置，可以选择放在顶部或者底部
  *  @param customRefreshControl 自定义刷新效果，传nil则使用默认效果
  */
-- (void)sf_addRefreshHandler:(void(^)(void))refreshHandler position:(SFPullRefreshPosition)position customRefreshControl:(UIView<SFRefreshControlDelegate> *)customRefreshControl;
+- (void)sf_addRefreshHandler:(void(^)(void))refreshHandler customRefreshControl:(UIView<SFRefreshControlDelegate> *)customRefreshControl;
 
 /**
  *  添加加载更多功能，必须在加到superView之前调用
@@ -49,21 +35,12 @@ typedef enum{
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler;
 
 /**
- *  添加加载更多功能，必须在加到superView之前调用
- *
- *  @param loadMoreHandler       加载更多的处理
- *  @param position              刷新的位置，可以选择放在顶部或者底部
- */
-- (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler position:(SFPullRefreshPosition)position;
-
-/**
  *  添加加载更多功能
  *
  *  @param loadMoreHandler       加载更多的处理
- *  @param position              加载更多的位置，可以选择放在顶部或者底部
  *  @param customLoadMoreControl 自定义的loadMoreControl，传nil则使用默认效果
  */
-- (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler position:(SFPullRefreshPosition)position customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl;
+- (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl;
 
 /**
  *  是否正在刷新，可以用来判断是否该清空数据
@@ -110,7 +87,7 @@ typedef enum{
 - (void)sf_showHintsView:(UIView *)hintsView;
 
 /**
- *  是否自动刷新
+ *  是否自动刷新，必须addRefreshHandler
  */
 - (void)sf_autoRefresh:(BOOL)autoRefresh;
 
