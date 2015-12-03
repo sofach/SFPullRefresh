@@ -53,10 +53,10 @@ static NSString *cellId = @"cellId";
 
 
     __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
-//    [self.tableView sf_addRefreshHandler:^{
-//        wkself.page=0;
-//        [wkself loadStrings];
-//    } customRefreshControl:[[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)]];
+    [self.tableView sf_addRefreshHandler:^{
+        wkself.page=0;
+        [wkself loadStrings];
+    } customRefreshControl:[[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)]];
     
     [self.tableView sf_addLoadMoreHandler:^{
         NSLog(@"load more");
