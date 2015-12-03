@@ -26,91 +26,36 @@
 
 @implementation SFRefreshControl
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         _controlColor = [UIColor colorWithWhite:110.0/255 alpha:1.0];
-        [self setup];
+        _refreshLayers = [NSMutableArray array];
+        CGFloat w = self.frame.size.height*RefreshContainerRatio;
+        
+        _refreshContainer = [[CALayer alloc] init];
+        _refreshContainer.frame = CGRectMake(0, 0, w, w);
+        _refreshContainer.position = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
+        [self.layer addSublayer:_refreshContainer];
+        
+        for (int i=0; i<RefreshLayerCount; i++) {
+            
+            CALayer *layer = [[CALayer alloc] init];
+            layer.backgroundColor = _controlColor.CGColor;
+            layer.frame = CGRectMake(0, 0, 2, (w/2)*RefreshLayerRatio);
+            layer.anchorPoint = CGPointMake(0.5, 1+(1-RefreshLayerRatio)/RefreshLayerRatio);
+            layer.position = CGPointMake(w/2, w/2);
+            layer.allowsEdgeAntialiasing = YES;
+            layer.cornerRadius = 1.0f;
+            layer.hidden = YES;
+            layer.transform = CATransform3DMakeRotation(2*M_PI*i/RefreshLayerCount, 0, 0, 1);
+            [_refreshContainer addSublayer:layer];
+            [_refreshLayers addObject:layer];
+        }
     }
     return self;
-}
-
-- (void)setup
-{
-    _refreshLayers = [NSMutableArray array];
-    CGFloat w = self.frame.size.height*RefreshContainerRatio;
-    
-    _refreshContainer = [[CALayer alloc] init];
-    _refreshContainer.frame = CGRectMake(0, 0, w, w);
-    _refreshContainer.position = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
-    [self.layer addSublayer:_refreshContainer];
-    
-    for (int i=0; i<RefreshLayerCount; i++) {
-        
-        CALayer *layer = [[CALayer alloc] init];
-        layer.backgroundColor = _controlColor.CGColor;
-        layer.frame = CGRectMake(0, 0, 2, (w/2)*RefreshLayerRatio);
-        layer.anchorPoint = CGPointMake(0.5, 1+(1-RefreshLayerRatio)/RefreshLayerRatio);
-        layer.position = CGPointMake(w/2, w/2);
-        layer.allowsEdgeAntialiasing = YES;
-        layer.cornerRadius = 1.0f;
-        layer.hidden = YES;
-        layer.transform = CATransform3DMakeRotation(2*M_PI*i/RefreshLayerCount, 0, 0, 1);
-        [_refreshContainer addSublayer:layer];
-        [_refreshLayers addObject:layer];
-    }
-}
-
-#pragma mark - private method
-- (CAAnimation *)rotationAnimation {
-    CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-    rotationAnimation.fromValue = [NSNumber numberWithFloat:0];
-    rotationAnimation.toValue = [NSNumber numberWithFloat:M_PI];
-    rotationAnimation.duration = 0.5f;
-    rotationAnimation.repeatCount = INFINITY;
-    rotationAnimation.speed = 0.5f;
-    return rotationAnimation;
-}
-
-- (CAAnimation *)opacityAnimationAtIndex:(NSInteger)index {
-    CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    opacityAnimation.fromValue = @(1);
-    opacityAnimation.toValue = @(0);
-    opacityAnimation.duration = 1;
-    opacityAnimation.repeatCount = INFINITY;
-    opacityAnimation.timeOffset = 1*(1 - index*1.0/RefreshLayerCount);
-    return opacityAnimation;
-}
-
-- (CAAnimation *)sizeAnimation {
-    CABasicAnimation *sizeAnimation = [CABasicAnimation animationWithKeyPath:@"bounds.size.height"];
-    sizeAnimation.fromValue = [NSNumber numberWithFloat:(self.frame.size.height*RefreshContainerRatio/2)*RefreshLayerRatio];
-    sizeAnimation.toValue = [NSNumber numberWithFloat:0];
-    sizeAnimation.duration = 0.25f;
-    sizeAnimation.repeatCount = 0;
-    sizeAnimation.removedOnCompletion = NO;
-    sizeAnimation.fillMode = kCAFillModeForwards;
-    return sizeAnimation;
-}
-
-- (CAAnimation *)rotationAnimationAtIndex:(NSInteger)index {
-    CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-    rotationAnimation.fromValue = [NSNumber numberWithFloat:2*M_PI*index/RefreshLayerCount];
-    rotationAnimation.toValue = [NSNumber numberWithFloat:2*M_PI*index/RefreshLayerCount+M_PI/2];
-    rotationAnimation.duration = 0.25f;
-    rotationAnimation.repeatCount = 0;
-    rotationAnimation.removedOnCompletion = YES;
-    return rotationAnimation;
 }
 
 
@@ -127,7 +72,14 @@
         if (!_isRotating) {
             _isRotating = YES;
             [_refreshContainer removeAllAnimations];
-            [_refreshContainer addAnimation:[self rotationAnimation] forKey:nil];
+            
+            CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+            rotationAnimation.fromValue = [NSNumber numberWithFloat:0];
+            rotationAnimation.toValue = [NSNumber numberWithFloat:M_PI];
+            rotationAnimation.duration = 0.5f;
+            rotationAnimation.repeatCount = INFINITY;
+            rotationAnimation.speed = 0.5f;
+            [_refreshContainer addAnimation:rotationAnimation forKey:nil];
         }
     }
     CGFloat w = self.frame.size.height*RefreshContainerRatio;
@@ -148,7 +100,13 @@
     _isRotating = NO;
     [_refreshContainer removeAllAnimations];
     [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-        [layer addAnimation:[self opacityAnimationAtIndex:idx] forKey:@"opacity"];
+        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        opacityAnimation.fromValue = @(1);
+        opacityAnimation.toValue = @(0);
+        opacityAnimation.duration = 1;
+        opacityAnimation.repeatCount = INFINITY;
+        opacityAnimation.timeOffset = 1*(1 - idx*1.0/RefreshLayerCount);
+        [layer addAnimation:opacityAnimation forKey:@"opacity"];
     }];
 }
 
@@ -164,8 +122,23 @@
     [_refreshContainer removeAllAnimations];
     [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
         [layer removeAnimationForKey:@"opacity"];
-        [layer addAnimation:[self sizeAnimation] forKey:nil];
-        [layer addAnimation:[self rotationAnimationAtIndex:idx] forKey:nil];
+        
+        CABasicAnimation *sizeAnimation = [CABasicAnimation animationWithKeyPath:@"bounds.size.height"];
+        sizeAnimation.fromValue = [NSNumber numberWithFloat:(self.frame.size.height*RefreshContainerRatio/2)*RefreshLayerRatio];
+        sizeAnimation.toValue = [NSNumber numberWithFloat:2];
+        sizeAnimation.duration = 0.25f;
+        sizeAnimation.repeatCount = 0;
+        sizeAnimation.removedOnCompletion = NO;
+        sizeAnimation.fillMode = kCAFillModeForwards;
+        [layer addAnimation:sizeAnimation forKey:nil];
+        
+        CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+        rotationAnimation.fromValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount];
+        rotationAnimation.toValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount+M_PI/2];
+        rotationAnimation.duration = 0.25f;
+        rotationAnimation.repeatCount = 0;
+        rotationAnimation.removedOnCompletion = YES;
+        [layer addAnimation:rotationAnimation forKey:nil];
     }];
     
     [CATransaction commit];

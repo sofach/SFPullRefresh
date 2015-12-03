@@ -18,7 +18,7 @@ typedef enum{
 @interface UIScrollView (SFPullRefresh)
 
 /**
- *  添加刷新功能，必须在加到superView之前调用
+ *  添加刷新功能
  *
  *  @param refreshHandler 刷新的处理
  */
@@ -57,7 +57,7 @@ typedef enum{
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler position:(SFPullRefreshPosition)position;
 
 /**
- *  添加加载更多功能，必须在加到superView之前调用
+ *  添加加载更多功能
  *
  *  @param loadMoreHandler       加载更多的处理
  *  @param position              加载更多的位置，可以选择放在顶部或者底部
@@ -71,14 +71,6 @@ typedef enum{
  *  @return
  */
 - (BOOL)sf_isRefreshing;
-
-/**
- *  当前加载的第几页，如果是顺序加载数据，没有奇葩的需求，可以用这个参数作为请求页码
- *  会在刷新时设为0，当加载了数据会自动加1
- *
- *  @return
- */
-- (NSUInteger)sf_page;
 
 /**
  *  结束加载或刷新，需要在请求结束后调用
@@ -108,14 +100,6 @@ typedef enum{
  *  自定义到达底部的view，需要在数据加载完时调用。
  */
 - (void)sf_reachEndWithView:(UIView *)view;
-
-/**
- *  显示提示语，可用于数据为空，或者请求错误的提示语
- *  注意，必须得在sf_finishLoading之后调用
- *
- *  @param hints 提示语
- */
-- (void)sf_showHints:(NSString *)hints;
 
 /**
  *  显示自定义提示界面，可用于数据为空，或者请求错误的提示语

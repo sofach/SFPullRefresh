@@ -9,41 +9,46 @@
 #import "CollectionTestViewController.h"
 #import "UIScrollView+SFPullRefresh.h"
 
-@interface CollectionTestViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface CollectionTestViewController ()
 
 @property (assign, nonatomic) NSInteger page;
 @property (strong, nonatomic) NSMutableArray *items;
-@property (strong, nonatomic) UICollectionView *collectionView;
+
+@property (strong, nonatomic) UILabel *hintsLabel;
+
 @end
 
 
 @implementation CollectionTestViewController
 
+- (UILabel *)hintsLabel {
+    if (!_hintsLabel) {
+        _hintsLabel = [[UILabel alloc] initWithFrame:self.view.bounds];
+        _hintsLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _hintsLabel;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     _items = [NSMutableArray array];
+    _page = 0;
     
-    UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
-    layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
-    _collectionView=[[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:layout];
-    [_collectionView setDataSource:self];
-    [_collectionView setDelegate:self];
-    _collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-//    _collectionView.alwaysBounceVertical = YES;
-//    [self.view addSubview:_collectionView];
+    self.collectionView.alwaysBounceVertical = YES;    
     
-    //以下调用必须在 [self.view addSubview:self.collectionView];之前
     CollectionTestViewController *wkself = self;
+
     [self.collectionView sf_addRefreshHandler:^{
+        wkself.page = 0;
         [wkself loadStrings];
     }];
+    
     [self.collectionView sf_addLoadMoreHandler:^{
         [wkself loadStrings];
     }];
-    [self.view addSubview:self.collectionView];
-
 }
 
 - (void)didReceiveMemoryWarning {
@@ -54,23 +59,29 @@
 
 - (void)loadStrings
 {
-    [self requestDataAtPage:self.collectionView.sf_page success:^(NSArray *strings) {
+    [self requestDataAtPage:self.page success:^(NSArray *strings) {
         if ([self.collectionView sf_isRefreshing]) {
             [self.items removeAllObjects];
         }
         for (NSString *str in strings) {
             [self.items insertObject:str atIndex:0];
         }
-        [self.collectionView sf_finishLoading];
         if (strings.count<10) {
             [self.collectionView sf_reachEndWithText:@"加载完毕"];
         }
+        _page++;
         if (self.items.count<=0) {
-            [self.collectionView sf_showHints:@"数据为空"];
+            _hintsLabel.text = @"数据为空";
+            [self.collectionView sf_showHintsView:self.hintsLabel];
         }
+
+        [self.collectionView sf_finishLoading];
+
     } failure:^(NSString *msg) {
         [self.items removeAllObjects];
         [self.collectionView sf_finishLoading];
+        self.hintsLabel.text = msg;
+        [self.collectionView sf_showHintsView:self.hintsLabel];
     }];
 }
 
@@ -97,13 +108,20 @@
     return CGSizeMake(w, w);
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+    layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
+    CollectionTestViewController *collectionVC = [[CollectionTestViewController alloc] initWithCollectionViewLayout:layout];
+    collectionVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:collectionVC animated:YES];
+}
 
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         sleep(1.5);
         NSMutableArray *arr = [NSMutableArray array];
-        if (page<3) {
+        if (page<5) {
             for (NSInteger i=0; i<10; i++) {
                 [arr addObject:[NSString stringWithFormat:@"%li", i%10]];
             }
@@ -116,12 +134,9 @@
         else
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (success) {
-                    success(nil);
+                if (failure) {
+                    failure(@"服务器错误！");
                 }
-                //                if (failure) {
-                //                    failure(@"服务器错误！");
-                //                }
             });
         }
         

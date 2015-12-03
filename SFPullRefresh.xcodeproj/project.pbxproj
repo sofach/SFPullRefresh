@@ -57,6 +57,7 @@
 		AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFLoadMoreControl.h; sourceTree = "<group>"; };
 		AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFLoadMoreControl.m; sourceTree = "<group>"; };
 		AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SFPullRefresh.podspec; sourceTree = "<group>"; };
+		AD3739BA1C0D402A009796A8 /* SFPullRefresh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFPullRefresh.h; sourceTree = "<group>"; };
 		AD7D69781BA1514A006D9881 /* wx@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wx@2x.png"; sourceTree = "<group>"; };
 		ADA047D11B62819E00F61079 /* CollectionTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionTestViewController.h; sourceTree = "<group>"; };
 		ADA047D21B62819E00F61079 /* CollectionTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionTestViewController.m; sourceTree = "<group>"; };
@@ -159,6 +160,7 @@
 				AD01A9A41B5550650034F8EA /* SFRefreshControl.m */,
 				AD01A9A61B5561AF0034F8EA /* SFLoadMoreControl.h */,
 				AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */,
+				AD3739BA1C0D402A009796A8 /* SFPullRefresh.h */,
 			);
 			path = lib;
 			sourceTree = "<group>";

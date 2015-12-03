@@ -8,9 +8,8 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
-#import "TableTestViewController.h"
 #import "CollectionTestViewController.h"
-
+#import "TableTestViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -31,17 +30,20 @@
     UITabBarItem *tableBarItem = [[UITabBarItem alloc] init];
     tableBarItem.title = @"table";
     tableNavi.tabBarItem = tableBarItem;
+//    tableNavi.navigationBar.translucent = NO;
     
     UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
-    CollectionTestViewController *collectionVC = [[CollectionTestViewController alloc] initWithNibName:nil bundle:nil];
+    layout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
+
+    CollectionTestViewController *collectionVC = [[CollectionTestViewController alloc] initWithCollectionViewLayout:layout];
     UINavigationController *collectionNavi = [[UINavigationController alloc] initWithRootViewController:collectionVC];
     UITabBarItem *collectionBarItem = [[UITabBarItem alloc] init];
     collectionBarItem.title = @"collection";
     collectionNavi.tabBarItem = collectionBarItem;
     
     UITabBarController *tabController = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
-    tabController.viewControllers = @[tableNavi, collectionNavi];
-    
+    tabController.viewControllers = @[collectionNavi,tableNavi];
+//    tabController.tabBar.translucent = NO;
     self.window.rootViewController = tabController;
 
     return YES;

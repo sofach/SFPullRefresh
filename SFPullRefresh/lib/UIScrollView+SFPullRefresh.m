@@ -9,13 +9,12 @@
 
 #import "UIScrollView+SFPullRefresh.h"
 
-@interface SFPullRefreshContext : NSObject
+@interface SFPullRefreshController : NSObject
 
-@property (weak, nonatomic) UIScrollView *owner;
-@property (assign, nonatomic) NSUInteger page;
+@property (weak, nonatomic) UIScrollView *scrollView;
+
 @property (assign, nonatomic) BOOL isRefreshing;
 @property (assign, nonatomic) BOOL autoRefresh;
-@property (assign, nonatomic) UIEdgeInsets orignInset;
 
 - (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void(^)(void))refreshHandler atPosition:(SFPullRefreshPosition)position;
 
@@ -25,12 +24,13 @@
 
 - (void)loadMoreAnimated:(BOOL)animated;
 
+- (void)setScrollViewOrignInset:(UIEdgeInsets)orignInset;
+
 - (void)finishLoading;
 
 - (void)reachEndWithText:(NSString *)text;
 - (void)reachEndWithView:(UIView *)view;
 
-- (void)showHints:(NSString *)hints;
 - (void)showHintsView:(UIView *)hintsView;
 
 - (void)restartAnimation;
@@ -45,21 +45,33 @@
 
 @interface UIScrollView ()
 
-@property (strong, nonatomic) SFPullRefreshContext *sf_pullRefreshContext;
+@property (strong, nonatomic) SFPullRefreshController *sf_pullRefreshController;
 
 @end
 
 @implementation UIScrollView (SFPullRefresh)
 
 #pragma mark getter setter
-- (SFPullRefreshContext *)sf_pullRefreshContext {
-    return objc_getAssociatedObject(self, @selector(sf_pullRefreshContext));
+- (SFPullRefreshController *)sf_pullRefreshController {
+    return objc_getAssociatedObject(self, @selector(sf_pullRefreshController));
 }
 
-- (void)setSf_pullRefreshContext:(SFPullRefreshContext *)sf_pullRefreshContext {
-    [self willChangeValueForKey:@"sf_pullRefreshContext"]; // KVO
-    objc_setAssociatedObject(self, @selector(sf_pullRefreshContext), sf_pullRefreshContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"sf_pullRefreshContext"]; // KVO
+- (void)setSf_pullRefreshController:(SFPullRefreshController *)sf_pullRefreshController {
+    [self willChangeValueForKey:@"sf_pullRefreshController"]; // KVO
+    objc_setAssociatedObject(self, @selector(sf_pullRefreshController), sf_pullRefreshController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self didChangeValueForKey:@"sf_pullRefreshController"]; // KVO
+}
+
+- (SFPullRefreshController *)sf_getPullRefreshController {
+    if (!self.sf_pullRefreshController) {
+        self.sf_pullRefreshController = [[SFPullRefreshController alloc] init];
+        self.sf_pullRefreshController.scrollView = self;
+        if (self.superview) { //有时候scrollview movetosuperview调用过早
+            [self.sf_pullRefreshController addObservers];
+            [self.sf_getPullRefreshController setScrollViewOrignInset:self.contentInset];
+        }
+    }
+    return self.sf_pullRefreshController;
 }
 
 #pragma mark - public method
@@ -72,17 +84,12 @@
 }
 
 - (void)sf_addRefreshHandler:(void(^)(void))refreshHandler position:(SFPullRefreshPosition)position customRefreshControl:(UIView<SFRefreshControlDelegate> *)customRefreshControl {
-
-    if (!self.sf_pullRefreshContext) {
-        self.sf_pullRefreshContext = [[SFPullRefreshContext alloc] init];
-        self.sf_pullRefreshContext.owner = self;
-    }
     
     if (!customRefreshControl) {
         customRefreshControl = [[SFRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)];
     }
     
-    [self.sf_pullRefreshContext setRefreshControl:customRefreshControl withRefreshHandler:refreshHandler atPosition:position];
+    [[self sf_getPullRefreshController] setRefreshControl:customRefreshControl withRefreshHandler:refreshHandler atPosition:position];
 }
 
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler {
@@ -94,87 +101,68 @@
 }
 
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler position:(SFPullRefreshPosition)position customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl {
-    if (!self.sf_pullRefreshContext) {
-        self.sf_pullRefreshContext = [[SFPullRefreshContext alloc] init];
-        self.sf_pullRefreshContext.owner = self;
-    }
 
     if (!customLoadMoreControl) {
         customLoadMoreControl = [[SFLoadMoreControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 50)];
     }
-    [self.sf_pullRefreshContext setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler atPosition:position];
+    [[self sf_getPullRefreshController] setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler atPosition:position];
 }
 
 - (BOOL)sf_isRefreshing {
-    return self.sf_pullRefreshContext.isRefreshing;
-}
-
-- (NSUInteger)sf_page {
-    return self.sf_pullRefreshContext.page;
+    return [self sf_getPullRefreshController].isRefreshing;
 }
 
 - (void)sf_autoRefresh:(BOOL)autoRefresh {
-    if (!self.sf_pullRefreshContext) {
-        self.sf_pullRefreshContext = [[SFPullRefreshContext alloc] init];
-        self.sf_pullRefreshContext.owner = self;
-    }
-    self.sf_pullRefreshContext.autoRefresh = autoRefresh;
+    [self sf_getPullRefreshController].autoRefresh = autoRefresh;
 }
 
 - (void)sf_finishLoading {
-    [self.sf_pullRefreshContext finishLoading];
+    [[self sf_getPullRefreshController] finishLoading];
 }
 
 - (void)sf_refreshAnimated:(BOOL)animated {
-    [self.sf_pullRefreshContext refreshAnimated:animated];
+    [[self sf_getPullRefreshController] refreshAnimated:animated];
 }
 
 - (void)sf_loadMoreAnimated:(BOOL)animated {
-    [self.sf_pullRefreshContext loadMoreAnimated:animated];
+    [[self sf_getPullRefreshController] loadMoreAnimated:animated];
 }
 
 - (void)sf_reachEndWithText:(NSString *)text {
-    [self.sf_pullRefreshContext reachEndWithText:text];
+    [[self sf_getPullRefreshController] reachEndWithText:text];
 }
 
 - (void)sf_reachEndWithView:(UIView *)view {
-    [self.sf_pullRefreshContext reachEndWithView:view];
-}
-
-- (void)sf_showHints:(NSString *)hints {
-    [self.sf_pullRefreshContext showHints:hints];
+    [[self sf_getPullRefreshController] reachEndWithView:view];
 }
 
 - (void)sf_showHintsView:(UIView *)hintsView {
-    [self.sf_pullRefreshContext showHintsView:hintsView];
+    [[self sf_getPullRefreshController] showHintsView:hintsView];
 }
 
 - (void)sf_setControlColor:(UIColor *)controlColor {
-    [self.sf_pullRefreshContext setControlColor:controlColor];
+    [[self sf_getPullRefreshController] setControlColor:controlColor];
 }
 
 - (void)sf_willMoveToSuperview:(UIView *)newSuperView {
     [self sf_willMoveToSuperview:newSuperView];
     
-    if (self.sf_pullRefreshContext) {
-        
+    if (self.sf_pullRefreshController) {
         if (self.superview) {
-            [self.sf_pullRefreshContext removeObservers];
+            [self.sf_pullRefreshController removeObservers];
         }
-
         if (newSuperView) {
-            [self.sf_pullRefreshContext addObservers];
-            self.sf_pullRefreshContext.orignInset = self.contentInset;
+            [self.sf_pullRefreshController addObservers];
+            [self.sf_getPullRefreshController setScrollViewOrignInset:self.contentInset];
         }
     }
 }
 
 - (void)sf_willMoveToWindow:(UIWindow *)newWindow {
     [self sf_willMoveToWindow:newWindow];
-    if (self.sf_pullRefreshContext) {
-        [self.sf_pullRefreshContext restartAnimation];
+    if (self.sf_pullRefreshController) {
+        [self.sf_pullRefreshController restartAnimation];
     }
-    
 }
 
 @end
@@ -203,10 +191,12 @@ typedef enum {
 } SFPullRefreshState;
 
 #pragma mark SFPullRefreshContext implementation
-@interface SFPullRefreshContext ()
+@interface SFPullRefreshController ()
 
-@property (assign, nonatomic) CGFloat preHeight;
 @property (assign, nonatomic) BOOL insetChanged;
+
+@property (assign, nonatomic) UIEdgeInsets orignInset;
+
 @property (assign, nonatomic) SFPullRefreshState refreshState;
 @property (assign, nonatomic) SFPullRefreshState loadMoreState;
 
@@ -225,47 +215,27 @@ typedef enum {
 
 @end
 
-@implementation SFPullRefreshContext
+#define DefaultTop -100204
 
-- (id)init
-{
+@implementation SFPullRefreshController
+
+- (id)init {
     self = [super init];
     if (self) {
-        _page = 0;
-        _preHeight = 0;
         _autoRefresh = YES;
-        _orignInset.top = -1;
+        _orignInset.top = DefaultTop;
         _refreshPosition = SFPullRefreshPositionTop;
         _loadMorePosition = SFPullRefreshPositionBottom;
     }
     return self;
 }
 
-
-
-#pragma mark - getter setter
-- (UILabel *)hintsLabel {
-    if (!_hintsLabel) {
-        _hintsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, _owner.frame.size.width, _owner.frame.size.height/2-_orignInset.top-_orignInset.bottom)];
-        _hintsLabel.textColor = [UIColor colorWithWhite:0.5 alpha:1.0];
-        _hintsLabel.textAlignment = NSTextAlignmentCenter;
-        _hintsLabel.numberOfLines = 0;
-        _hintsLabel.lineBreakMode = NSLineBreakByCharWrapping;
-        _hintsLabel.font = [UIFont systemFontOfSize:16.0];
-        _hintsLabel.backgroundColor = [UIColor clearColor];
-    }
-    return _hintsLabel;
-}
-
-- (void)setOwner:(UIScrollView *)owner
-{
-    _owner = owner;
-    
++ (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         Class class = [UIScrollView class];
-        [SFPullRefreshContext replaceSelector:@selector(willMoveToWindow:) toSelector:@selector(sf_willMoveToWindow:) forClass:class]; //为了切换view，重启动画
-        [SFPullRefreshContext replaceSelector:@selector(willMoveToSuperview:) toSelector:@selector(sf_willMoveToSuperview:) forClass:class];
+        [SFPullRefreshController replaceSelector:@selector(willMoveToWindow:) toSelector:@selector(sf_willMoveToWindow:) forClass:class]; //为了切换view，重启动画
+        [SFPullRefreshController replaceSelector:@selector(willMoveToSuperview:) toSelector:@selector(sf_willMoveToSuperview:) forClass:class];
     });
 }
 
@@ -281,68 +251,32 @@ typedef enum {
     }
 }
 
-- (void)setOrignInset:(UIEdgeInsets)orignInset
-{
-    //这里对UITableViewController支持的不大好，不知道什么原因，当在外部设置tableView.contentInsets时，UITableViewController直接加上了透明的navigationBar的高度，导致下移多下移了64
-//    if (_orignInset.top > 0.0) {
-//        return;
-//    }
+#pragma mark - getter setter
+//有2个地方可以设置origininset，一个是监听scrollview的contentinset，因为navigationbar透明时，会自动修改scrollview的contentinset，所以这个时候也需要重新设置origininset。
+//另一个是在movetosuperview时，movetosuperview调用的只需要修改一次，因为某些清空下，监听不到scrollview的contentinset变化
+- (void)setScrollViewOrignInset:(UIEdgeInsets)orignInset {
+    if (_orignInset.top == DefaultTop) {
+        self.orignInset = orignInset;
+    }
+}
+
+- (void)setOrignInset:(UIEdgeInsets)orignInset {
     _orignInset = orignInset;
     if (_refreshControl) {
-        
-        CGRect frame = _refreshControl.frame;
-        if (_refreshPosition == SFPullRefreshPositionTop) {
-            
-            frame.origin.y = -_refreshControl.frame.size.height;
-        } else {
-            frame.origin.y = [self ownerContentHeight];
-        }
-        _refreshControl.frame = frame;
         if (self.autoRefresh) { //自动刷新
             [self refreshAnimated:YES];
         }
     }
-    if (_loadMoreControl) {
-        
-        CGRect frame = self.loadMoreControl.frame;
-        if (_loadMorePosition == SFPullRefreshPositionTop) {
-            
-            frame.origin.y = -self.loadMoreControl.frame.size.height;
-        }
-        else
-        {
-            frame.origin.y = self.owner.frame.size.height;
-        }
-        self.loadMoreControl.frame = frame;
-    }
 }
 
 #pragma mark private method
-- (CGFloat)ownerContentHeight {
-    CGFloat height = self.owner.contentSize.height;
-    if (height+self.orignInset.bottom+self.orignInset.top < self.owner.frame.size.height) {
-        height = self.owner.frame.size.height - self.orignInset.bottom - self.orignInset.top;
+- (CGFloat)scrollViewContentHeight {
+    CGFloat height = self.scrollView.contentSize.height;
+    if (height+self.orignInset.bottom+self.orignInset.top < self.scrollView.frame.size.height) {
+        height = self.scrollView.frame.size.height - self.orignInset.bottom - self.orignInset.top;
     }
     return height;
 }
-
-//- (NSInteger)totalItems
-//{
-//    NSInteger totalItems = 0;
-//    if ([self.owner isKindOfClass:[UITableView class]]) {
-//        UITableView *tableView = (UITableView *)self.owner;
-//        for (NSInteger section = 0; section<tableView.numberOfSections; section++) {
-//            totalItems += [tableView numberOfRowsInSection:section];
-//        }
-//    } else if ([self.owner isKindOfClass:[UICollectionView class]]) {
-//        UICollectionView *collectionView = (UICollectionView *)self.owner;
-//        
-//        for (NSInteger section = 0; section<collectionView.numberOfSections; section++) {
-//            totalItems += [collectionView numberOfItemsInSection:section];
-//        }
-//    }
-//    return totalItems;
-//}
 
 - (void)beginRefresh {
     self.isRefreshing = YES;
@@ -353,15 +287,13 @@ typedef enum {
     }
     
     if (self.refreshHandler) {
-        self.page = 0;
-        self.preHeight = 0;
         self.refreshHandler();
     }
 }
 
-- (void)setOwnerInset:(UIEdgeInsets)inset {
+- (void)setScrollViewContentInset:(UIEdgeInsets)inset {
     self.insetChanged = YES;
-    self.owner.contentInset = inset;
+    self.scrollView.contentInset = inset;
 }
 
 - (void)beginLoadMore {
@@ -373,11 +305,7 @@ typedef enum {
         [self.loadMoreControl beginLoading];
     }
     
-    if (self.loadMoreHandler)
-    {
-        if ([self.owner respondsToSelector:@selector(numberOfSections)]) {
-            
-        }
+    if (self.loadMoreHandler) {
         self.loadMoreHandler();
     }
 }
@@ -392,29 +320,37 @@ typedef enum {
 }
 
 #pragma mark public method
-- (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void (^)(void))refreshHandler atPosition:(SFPullRefreshPosition)position
-{
+- (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void (^)(void))refreshHandler atPosition:(SFPullRefreshPosition)position {
+
     if (self.refreshControl) {
         [self.refreshControl removeFromSuperview];
     }
     self.refreshControl = refreshControl;
     self.refreshHandler = refreshHandler;
-    [self.owner addSubview:self.refreshControl];
+    [self.scrollView addSubview:self.refreshControl];
     
     if (self.loadMoreControl && self.loadMorePosition == position) {
         NSLog(@"error: can't set refreshControl at same position with loadMoreControl");
         position = -position;
     }
     self.refreshPosition = position;
+    CGRect frame = _refreshControl.frame;
+    if (_refreshPosition == SFPullRefreshPositionTop) {
+        
+        frame.origin.y = -_refreshControl.frame.size.height;
+    } else {
+        frame.origin.y = self.scrollView.frame.size.height;
+    }
+    _refreshControl.frame = frame;
+
 }
 
-- (void)setLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)loadMoreControl withLoadMoreHandler:(void (^)(void))loadMoreHandler atPosition:(SFPullRefreshPosition)position
-{
+- (void)setLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)loadMoreControl withLoadMoreHandler:(void (^)(void))loadMoreHandler atPosition:(SFPullRefreshPosition)position {
     if (self.loadMoreControl) {
         [self.loadMoreControl removeFromSuperview];
     }
     self.loadMoreControl = loadMoreControl;
-    [self.owner addSubview:self.loadMoreControl];
+    [self.scrollView addSubview:self.loadMoreControl];
     self.loadMoreHandler = loadMoreHandler;
     
     if (self.refreshControl && self.refreshPosition == position) {
@@ -422,43 +358,59 @@ typedef enum {
         position = -position;
     }
     self.loadMorePosition = position;
+    CGRect frame = self.loadMoreControl.frame;
+    if (_loadMorePosition == SFPullRefreshPositionTop) {
+        
+        frame.origin.y = -self.loadMoreControl.frame.size.height;
+    }
+    else
+    {
+        frame.origin.y = self.scrollView.frame.size.height;
+    }
+    self.loadMoreControl.frame = frame;
 }
 
-- (void)finishLoading
-{
+- (void)finishLoading {
     if (_hintsView) {
         [_hintsView removeFromSuperview];
     }
-    
+    UIEdgeInsets insets = self.orignInset;
     if (self.loadMoreControl) {
+        
         if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
             [self.loadMoreControl endLoading];
         }
-        
-        if (self.loadMoreState == SFPullRefreshStateLoading) {
-            self.loadMoreState = SFPullRefreshStateNormal;
+        if (self.loadMorePosition == SFPullRefreshPositionBottom) {
+            insets.bottom = self.scrollView.contentInset.bottom;
+        } else {
+            insets.top = self.scrollView.contentInset.top;
         }
+        [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            [self setScrollViewContentInset:insets];
+        } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+            if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
+                [self.scrollView performSelector:@selector(reloadData)];
+            }
+            if (self.loadMoreState == SFPullRefreshStateLoading) { //因为有可能先调用reachend
+                self.loadMoreState = SFPullRefreshStateNormal;
+            }
+        }];
     }
-    if (self.refreshControl) {
+    if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
             [self.refreshControl endRefreshing];
         }
-        self.refreshState = SFPullRefreshStateNormal;
-        self.isRefreshing = NO;
+
+        [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            [self setScrollViewContentInset:insets];
+        } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+            self.refreshState = SFPullRefreshStateNormal; //必须在结束动画时改变状态，在此之前，contentoffset有可能会改变，比如reloaddata
+            self.isRefreshing = NO;
+        }];
     }
-    [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        UIEdgeInsets insets = self.orignInset;
-        insets.bottom = self.owner.contentInset.bottom;
-        [self setOwnerInset:insets];
-    } completion:^(BOOL com){
-        if ([self.owner respondsToSelector:@selector(reloadData)]) {
-            [self.owner performSelector:@selector(reloadData)];
-        }
-    }];
 }
 
-- (void)refreshAnimated:(BOOL)animated
-{
+- (void)refreshAnimated:(BOOL)animated {
     if (self.refreshControl) { //自动刷新
         CGFloat animateTime = 0.0;
         if (animated) {
@@ -467,15 +419,15 @@ typedef enum {
         if (self.refreshPosition == SFPullRefreshPositionTop) {
             
             [UIView animateWithDuration:animateTime animations:^{
-                [self.owner setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
+                [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
             } completion:^(BOOL finished) {
                 [self tableViewDidEndDragging];
             }];
         } else {
-            CGFloat contentHeight = [self ownerContentHeight];
+            CGFloat contentHeight = [self scrollViewContentHeight];
             
             [UIView animateWithDuration:animateTime animations:^{
-                [self.owner setContentOffset:CGPointMake(0, contentHeight+self.orignInset.bottom-self.owner.frame.size.height+self.refreshControl.frame.size.height) animated:NO];
+                [self.scrollView setContentOffset:CGPointMake(0, contentHeight+self.orignInset.bottom-self.scrollView.frame.size.height+self.refreshControl.frame.size.height) animated:NO];
             } completion:^(BOOL finished) {
                 [self tableViewDidEndDragging];
             }];
@@ -483,8 +435,7 @@ typedef enum {
     }
 }
 
-- (void)loadMoreAnimated:(BOOL)animated
-{
+- (void)loadMoreAnimated:(BOOL)animated {
     if (self.loadMoreControl) {
         CGFloat animateTime = 0.0;
         if (animated) {
@@ -492,15 +443,15 @@ typedef enum {
         }
         if (self.loadMorePosition == SFPullRefreshPositionBottom) {
             
-            CGFloat contentHeight = [self ownerContentHeight];
+            CGFloat contentHeight = [self scrollViewContentHeight];
             [UIView animateWithDuration:animateTime animations:^{
-                [self.owner setContentOffset:CGPointMake(0, contentHeight+self.orignInset.bottom-self.owner.frame.size.height+self.loadMoreControl.frame.size.height) animated:NO];
+                [self.scrollView setContentOffset:CGPointMake(0, contentHeight+self.orignInset.bottom-self.scrollView.frame.size.height+self.loadMoreControl.frame.size.height) animated:NO];
             } completion:^(BOOL finished) {
                 [self tableViewDidEndDragging];
             }];
         } else {
             [UIView animateWithDuration:animateTime animations:^{
-                [self.owner setContentOffset:CGPointMake(0, -self.orignInset.top-self.loadMoreControl.frame.size.height) animated:NO];
+                [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.loadMoreControl.frame.size.height) animated:NO];
             } completion:^(BOOL finished) {
                 [self tableViewDidEndDragging];
             }];
@@ -508,8 +459,7 @@ typedef enum {
     }
 }
 
-- (void)reachEndWithText:(NSString *)text
-{
+- (void)reachEndWithText:(NSString *)text {
     if (self.loadMoreControl) {
         if (!text) {
             text = @"没有了";
@@ -519,14 +469,13 @@ typedef enum {
         }
         
         [UIView animateWithDuration:.25 animations:^{
-            [self setOwnerInset:self.orignInset];
+            [self setScrollViewContentInset:self.orignInset];
         }];
         self.loadMoreState = SFPullRefreshStateReachEnd;
     }
 }
 
-- (void)reachEndWithView:(UIView *)view
-{
+- (void)reachEndWithView:(UIView *)view {
     if (self.loadMoreControl) {
         if (self.reachEndView && self.reachEndView.superview) {
             [self.reachEndView removeFromSuperview];
@@ -539,15 +488,10 @@ typedef enum {
         }
         
         [UIView animateWithDuration:.25 animations:^{
-            [self setOwnerInset:self.orignInset];
+            [self setScrollViewContentInset:self.orignInset];
         }];
         self.loadMoreState = SFPullRefreshStateReachEnd;
     }
-}
-
-- (void)showHints:(NSString *)hints {
-    self.hintsLabel.text = hints;
-    [self showHintsView:self.hintsLabel];
 }
 
 - (void)showHintsView:(UIView *)hintsView {
@@ -555,11 +499,10 @@ typedef enum {
         [self.hintsView removeFromSuperview];
     }
     self.hintsView = hintsView;
-    [self.owner addSubview:self.hintsView];
+    [self.scrollView addSubview:self.hintsView];
 }
 
-- (void)setControlColor:(UIColor *)controlColor
-{
+- (void)setControlColor:(UIColor *)controlColor {
     if (self.refreshControl && [self.refreshControl respondsToSelector:@selector(setControlColor:)]) {
         [self.refreshControl setControlColor:controlColor];
     }
@@ -569,24 +512,24 @@ typedef enum {
 }
 
 - (void)addObservers {
-    [self.owner addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-    [self.owner addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:nil];
+    [self.scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    [self.scrollView addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:nil];
 
-    [self.owner addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
-    [self.owner.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
+    [self.scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    [self.scrollView.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)removeObservers {
-    [self.owner removeObserver:self forKeyPath:@"contentSize"];
-    [self.owner removeObserver:self forKeyPath:@"contentInset"];
-    [self.owner removeObserver:self forKeyPath:@"contentOffset"];
-    [self.owner.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
+    [self.scrollView removeObserver:self forKeyPath:@"contentSize"];
+    [self.scrollView removeObserver:self forKeyPath:@"contentInset"];
+    [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
+    [self.scrollView.panGestureRecognizer removeObserver:self forKeyPath:@"state"];
 }
 
 #define mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 
-    if (object == self.owner) {
+    if (object == self.scrollView) {
         if ([keyPath isEqualToString:@"contentSize"] && self.loadMoreControl) {
             
             CGFloat preContentHeight = [[change objectForKey:@"old"] CGSizeValue].height;
@@ -595,36 +538,33 @@ typedef enum {
             if (preContentHeight == curContentHeight) {
                 return;
             }
-            if (curContentHeight>self.preHeight) {
-                self.page++;
-                self.preHeight = curContentHeight;
-            }
+
             if (self.loadMoreControl) { //底部加载更多，则需要每次加载完更新位置
                 
                 if (self.loadMorePosition == SFPullRefreshPositionBottom) {
                     
                     CGRect frame = self.loadMoreControl.frame;
-                    frame.origin.y = [self ownerContentHeight];
+                    frame.origin.y = [self scrollViewContentHeight];
                     self.loadMoreControl.frame = frame;
 
                 } else {
                     if (curContentHeight-preContentHeight>0) {
-                        CGPoint offset = self.owner.contentOffset;
+                        CGPoint offset = self.scrollView.contentOffset;
                         if (preContentHeight == 0) {
-                            CGFloat contentHeight = [self ownerContentHeight];
-                            offset.y = contentHeight+self.orignInset.bottom-self.owner.frame.size.height;
+                            CGFloat contentHeight = [self scrollViewContentHeight];
+                            offset.y = contentHeight+self.orignInset.bottom-self.scrollView.frame.size.height;
                         }
                         else if (preContentHeight > 0)
                         {
                             offset.y += curContentHeight-preContentHeight;
                         }
-                        self.owner.contentOffset = offset;
+                        self.scrollView.contentOffset = offset;
                     }
                 }
             }
             if (self.refreshControl && self.refreshPosition == SFPullRefreshPositionBottom) {
                 CGRect frame = self.refreshControl.frame;
-                frame.origin.y = [self ownerContentHeight];
+                frame.origin.y = [self scrollViewContentHeight];
                 self.refreshControl.frame = frame;
             }
         } else if ([keyPath isEqualToString:@"contentOffset"]) {
@@ -632,11 +572,11 @@ typedef enum {
             [self tableViewDidScroll];
         } else if ([keyPath isEqualToString:@"contentInset"]) {
             if (!self.insetChanged) { //仅仅是willMoveToView时设置originInset不够。手动修改的inset，不记录
-                self.orignInset = self.owner.contentInset;
+                self.orignInset = self.scrollView.contentInset;
             }
         }
-    } else if (object == self.owner.panGestureRecognizer) {
-        if ([keyPath isEqualToString:@"state"] && self.owner.panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+    } else if (object == self.scrollView.panGestureRecognizer) {
+        if ([keyPath isEqualToString:@"state"] && self.scrollView.panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             
             [self tableViewDidEndDragging];
         }
@@ -647,11 +587,11 @@ typedef enum {
 
 - (void)tableViewDidScroll {
 
-    if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing) {
+    if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing && self.loadMoreState != SFPullRefreshStateLoading) {
         
         if (self.refreshPosition == SFPullRefreshPositionTop) {
             
-            CGFloat yMargin = self.owner.contentOffset.y + self.orignInset.top;
+            CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top;
             if (yMargin < 0 && yMargin > -self.refreshControl.frame.size.height){ //refreshControl partly appeared
                 self.refreshState = SFPullRefreshStatePullToRefresh;
                 if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
@@ -667,8 +607,8 @@ typedef enum {
             }
         } else {
             
-            CGFloat contentHeight = [self ownerContentHeight];
-            CGFloat yMargin = self.owner.contentOffset.y + self.owner.frame.size.height - contentHeight - self.orignInset.bottom;
+            CGFloat contentHeight = [self scrollViewContentHeight];
+            CGFloat yMargin = self.scrollView.contentOffset.y + self.scrollView.frame.size.height - contentHeight - self.orignInset.bottom;
             if (yMargin > 0 && yMargin<self.refreshControl.frame.size.height) { //refreshControl partly appeard
                 
                 self.refreshState = SFPullRefreshStatePullToRefresh;
@@ -685,53 +625,54 @@ typedef enum {
         }
     }
     
-    if (self.loadMoreControl && self.loadMoreState == SFPullRefreshStateNormal) {
+    if (self.loadMoreControl && self.loadMoreState == SFPullRefreshStateNormal && self.refreshState != SFPullRefreshStateRefreshing) {
         
         if (self.loadMorePosition == SFPullRefreshPositionTop) {
-            CGFloat yMargin = self.owner.contentOffset.y+self.orignInset.top;
+            CGFloat yMargin = self.scrollView.contentOffset.y+self.orignInset.top;
             if (yMargin < -5) {
                 
                 [self beginLoadMore];
                 [UIView animateWithDuration:0.1 animations:^{
-                    [self setOwnerInset:UIEdgeInsetsMake(self.loadMoreControl.frame.size.height+self.orignInset.top, self.orignInset.right, self.orignInset.bottom, self.orignInset.left)];
+                    UIEdgeInsets inset = UIEdgeInsetsMake(self.loadMoreControl.frame.size.height+self.orignInset.top, self.orignInset.right, self.orignInset.bottom, self.orignInset.left);
+                    [self setScrollViewContentInset:inset];
                 }];
             }
         } else {
             
-            CGFloat contentHeight = [self ownerContentHeight];
-            CGFloat yMargin = self.owner.contentOffset.y + self.owner.frame.size.height - contentHeight - self.orignInset.bottom;
+            CGFloat contentHeight = [self scrollViewContentHeight];
+            CGFloat yMargin = self.scrollView.contentOffset.y + self.scrollView.frame.size.height - contentHeight - self.orignInset.bottom;
             
             if ( yMargin > 0) {  //footer will appeared
                 
                 [self beginLoadMore];
                 
-                [UIView animateWithDuration:0.1 animations:^{
-                    [self setOwnerInset:UIEdgeInsetsMake(self.orignInset.top, self.orignInset.right, self.loadMoreControl.frame.size.height+self.orignInset.bottom, self.orignInset.left)];
+                [UIView animateWithDuration:.1 animations:^{
+                    UIEdgeInsets inset = UIEdgeInsetsMake(self.orignInset.top, self.orignInset.right, self.loadMoreControl.frame.size.height+self.orignInset.bottom, self.orignInset.left);
+                    [self setScrollViewContentInset:inset];
                 }];
             }
         }
     }
 }
 
-- (void)tableViewDidEndDragging
-{
-    if (self.refreshControl && self.refreshState == SFPullRefreshStateReleaseToRefresh) {
+- (void)tableViewDidEndDragging {
+    if (self.refreshControl && self.refreshState == SFPullRefreshStateReleaseToRefresh && self.loadMoreState != SFPullRefreshStateLoading) {
         
         [self beginRefresh];
         
         [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             
             if (self.refreshPosition == SFPullRefreshPositionTop) {
-                UIEdgeInsets inset = self.owner.contentInset;
+                UIEdgeInsets inset = self.scrollView.contentInset;
                 inset.top = self.refreshControl.frame.size.height+self.orignInset.top;
-                [self setOwnerInset:inset];
+                [self setScrollViewContentInset:inset];
             } else {
-                UIEdgeInsets inset = self.owner.contentInset;
+                UIEdgeInsets inset = self.scrollView.contentInset;
                 //当内容太小时，设置insetbottom会导致下降，原因未知，当显示hintsView时还是有点问题
-                if (self.owner.contentSize.height+self.orignInset.top+self.orignInset.bottom>self.owner.frame.size.height) {
+                if (self.scrollView.contentSize.height+self.orignInset.top+self.orignInset.bottom>self.scrollView.frame.size.height) {
                     inset.bottom = self.refreshControl.frame.size.height+self.orignInset.bottom;
                 }
-                [self setOwnerInset:inset];
+                [self setScrollViewContentInset:inset];
             }
         } completion:nil];
     }

@@ -5,61 +5,63 @@
 //  Created by shaohua.chen on 10/16/14.
 //  Copyright (c) 2014 shaohua.chen. All rights reserved.
 //
-#import <objc/runtime.h>
 
 #import "TableTestViewController.h"
 #import "UIScrollView+SFPullRefresh.h"
-#import "CustomRefreshControl.h"
 #import "TestTableCell.h"
 #import "TableTestViewController.h"
+#import "CustomRefreshControl.h"
 
 @interface TableTestViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) NSMutableArray *items;
 
+@property (assign, nonatomic) NSInteger page;
+
 @property (strong, nonatomic) UITableView *tableView;
+
+@property (strong, nonatomic) UILabel *hintsLabel;
 @end
 
 @implementation TableTestViewController
 
 static NSString *cellId = @"cellId";
 
+- (UILabel *)hintsLabel {
+    if (!_hintsLabel) {
+        _hintsLabel = [[UILabel alloc] initWithFrame:self.view.bounds];
+        _hintsLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _hintsLabel;
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     _items = [NSMutableArray array];
+    _page = 0;
+    
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.tableView registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
-//    _table.estimatedRowHeight = 60;
-    
-//    CustomRefreshControl *customRefreshControl = [[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 60)];
-//    
-//    [_table sf_addRefreshHandler:^{
-//        self.page = 0;
-//        [self loadStrings];
-//    } position:SFPullRefreshPositionTop customRefreshControl:customRefreshControl];
-//    [self loadStrings];
-
-    __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
-    //以下调用必须在 [self.view addSubview:self.tableView];之前
-    [self.tableView sf_addRefreshHandler:^{
-        [wkself loadStrings];
-    }];
-    
-    [self.tableView sf_addLoadMoreHandler:^{
-        [wkself loadStrings];
-    }];
-    
+    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:self.tableView];
 
-}
 
-- (void)testBlock:(void(^)(void))block
-{
+    __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
+    [self.tableView sf_addRefreshHandler:^{
+        wkself.page=0;
+        [wkself loadStrings];
+    } position:SFPullRefreshPositionTop customRefreshControl:[[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)]];
+    
+    [self.tableView sf_addLoadMoreHandler:^{
+        NSLog(@"load more");
+        [wkself loadStrings];
+    } position:SFPullRefreshPositionBottom];
     
 }
 
@@ -73,9 +75,11 @@ static NSString *cellId = @"cellId";
     NSLog(@"TableTestViewController dealloced");
 }
 
+
+
 - (void)loadStrings
 {
-    [self requestDataAtPage:self.tableView.sf_page success:^(NSArray *strings) {
+    [self requestDataAtPage:self.page success:^(NSArray *strings) {
         if (self.tableView.sf_isRefreshing) {
             [self.items removeAllObjects];
         }
@@ -83,24 +87,24 @@ static NSString *cellId = @"cellId";
 //            [self.items insertObject:str atIndex:0]; //如果顶部加载，数据从头插入体验更好
             [self.items addObject:str];
         }
-        
+        self.page++;
         if (strings.count<10) {
             [self.tableView sf_reachEndWithText:@"加载完毕"];
         }
         [self.tableView sf_finishLoading];
         if (self.items.count<=0) {
-            [self.tableView sf_showHints:@"没有数据"];
+            self.hintsLabel.text = @"没有数据";
+            [self.tableView sf_showHintsView:self.hintsLabel];
         }
     } failure:^(NSString *msg) {
         [self.items removeAllObjects];
         [self.tableView sf_finishLoading];
         //可以使用自定义的提示界面
-//        UIView *hintsView = [[UIView alloc] initWithFrame:self.tableView.bounds];
-//        hintsView.backgroundColor = [UIColor greenColor];
-//        [self.tableView sf_showHintsView:hintsView];
-        [self.tableView sf_showHints:msg];
+        self.hintsLabel.text = msg;
+        [self.tableView sf_showHintsView:self.hintsLabel];
     }];
 }
+
 
 
 #pragma mark - UITableViewDelegate
@@ -116,8 +120,7 @@ static NSString *cellId = @"cellId";
     return _items.count;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 85;
 }
 
@@ -125,12 +128,16 @@ static NSString *cellId = @"cellId";
 {
     TestTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     [cell setIcon:[NSString stringWithFormat:@"%li", indexPath.row%10] string:_items[indexPath.row]];
+
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    TableTestViewController *tableTestVC = [[TableTestViewController alloc] initWithNibName:nil bundle:nil];
+    tableTestVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:tableTestVC animated:YES];
 }
 
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
@@ -138,7 +145,7 @@ static NSString *cellId = @"cellId";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         sleep(1.5);
         NSMutableArray *arr = [NSMutableArray array];
-        if (page<3) {
+        if (page<5) {
             for (int i=0; i<10; i++) {
                 [arr addObject:[NSString stringWithFormat:@"this is row%ld", i+page*10]];
             }
@@ -151,27 +158,17 @@ static NSString *cellId = @"cellId";
         else
         {
             dispatch_async(dispatch_get_main_queue(), ^{
+//                if (failure) {
+//                    failure(@"服务器错误！");
+//                }
                 if (success) {
                     success(arr);
                 }
             });
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                if (failure) {
-//                    failure(@"服务器错误！");
-//                }
-//            });
         }
         
     });
 }
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

@@ -13,9 +13,9 @@
  */
 @protocol SFRefreshControlDelegate <NSObject>
 
-- (void)willRefreshWithProgress:(CGFloat)progress; //添加将要刷新的效果
-- (void)beginRefreshing; //添加开始刷新的效果
-- (void)endRefreshing; //添加结束刷新的效果
+- (void)willRefreshWithProgress:(CGFloat)progress; //在这里添加将要刷新的效果
+- (void)beginRefreshing; //在这里添加开始刷新的效果
+- (void)endRefreshing; //在这里添加结束刷新的效果
 
 @optional
 - (void)setControlColor:(UIColor *)controlColor; //设置颜色

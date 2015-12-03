@@ -32,16 +32,16 @@
         
         _leftGateLayer = [[CAShapeLayer alloc] init];
         _leftGateLayer.backgroundColor = [UIColor greenColor].CGColor;
-        _leftGateLayer.fillColor = [UIColor lightGrayColor].CGColor;
-        _leftGateLayer.strokeColor = [UIColor lightGrayColor].CGColor;
+        _leftGateLayer.fillColor = [UIColor greenColor].CGColor;
+        _leftGateLayer.strokeColor = [UIColor greenColor].CGColor;
         _leftGateLayer.lineWidth = 4.0;
         _leftGateLayer.path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(frame.size.width/4-2, frame.size.height/4, 4, frame.size.height/2)].CGPath;
         [self.layer addSublayer:_leftGateLayer];
         
         _rightGateLayer = [[CAShapeLayer alloc] init];
-        _rightGateLayer.backgroundColor = [UIColor greenColor].CGColor;
-        _rightGateLayer.fillColor = [UIColor lightGrayColor].CGColor;
-        _rightGateLayer.strokeColor = [UIColor lightGrayColor].CGColor;
+        _rightGateLayer.backgroundColor = [UIColor redColor].CGColor;
+        _rightGateLayer.fillColor = [UIColor redColor].CGColor;
+        _rightGateLayer.strokeColor = [UIColor redColor].CGColor;
         _rightGateLayer.lineWidth = 4.0;
         _rightGateLayer.path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(frame.size.width*3.0/4-2, frame.size.height/4, 4, frame.size.height/2)].CGPath;
         [self.layer addSublayer:_rightGateLayer];
@@ -53,21 +53,6 @@
         [self.layer addSublayer:_ballLayer];
     }
     return self;
-}
-
-
-- (CAAnimation *)bounceAnimation {
-    
-    CGPoint beginPoint = CGPointMake(self.frame.size.width/4, self.frame.size.height/2);
-    CGPoint endPoint = CGPointMake(self.frame.size.width*3.0/4, self.frame.size.height/2);
-    
-    CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animation];
-    bounceAnimation.values = @[[NSValue valueWithCGPoint:beginPoint], [NSValue valueWithCGPoint:endPoint]];
-    bounceAnimation.autoreverses = YES;
-    bounceAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    bounceAnimation.repeatCount = INFINITY;
-
-    return bounceAnimation;
 }
 
 
@@ -92,7 +77,16 @@
 
 - (void)beginRefreshing
 {
-    [_ballLayer addAnimation:[self bounceAnimation] forKey:@"position"];
+    CGPoint beginPoint = CGPointMake(self.frame.size.width/4, self.frame.size.height/2);
+    CGPoint endPoint = CGPointMake(self.frame.size.width*3.0/4, self.frame.size.height/2);
+    
+    CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animation];
+    bounceAnimation.values = @[[NSValue valueWithCGPoint:beginPoint], [NSValue valueWithCGPoint:endPoint]];
+    bounceAnimation.autoreverses = YES;
+    bounceAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    bounceAnimation.repeatCount = INFINITY;
+    
+    [_ballLayer addAnimation:bounceAnimation forKey:@"position"];
 }
 
 - (void)endRefreshing
