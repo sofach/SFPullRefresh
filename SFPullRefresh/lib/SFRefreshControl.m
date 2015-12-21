@@ -110,8 +110,9 @@
     }];
 }
 
-- (void)endRefreshing
-{
+- (NSTimeInterval)endRefreshing {
+    
+    NSTimeInterval interval = 0.25;
     [CATransaction begin];
     [CATransaction setCompletionBlock:^{
         [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
@@ -126,7 +127,7 @@
         CABasicAnimation *sizeAnimation = [CABasicAnimation animationWithKeyPath:@"bounds.size.height"];
         sizeAnimation.fromValue = [NSNumber numberWithFloat:(self.frame.size.height*RefreshContainerRatio/2)*RefreshLayerRatio];
         sizeAnimation.toValue = [NSNumber numberWithFloat:2];
-        sizeAnimation.duration = 0.25f;
+        sizeAnimation.duration = interval;
         sizeAnimation.repeatCount = 0;
         sizeAnimation.removedOnCompletion = NO;
         sizeAnimation.fillMode = kCAFillModeForwards;
@@ -135,13 +136,15 @@
         CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
         rotationAnimation.fromValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount];
         rotationAnimation.toValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount+M_PI/2];
-        rotationAnimation.duration = 0.25f;
+        rotationAnimation.duration = interval;
         rotationAnimation.repeatCount = 0;
         rotationAnimation.removedOnCompletion = YES;
         [layer addAnimation:rotationAnimation forKey:nil];
     }];
     
     [CATransaction commit];
+    
+    return interval;
 }
 
 - (void)setControlColor:(UIColor *)controlColor

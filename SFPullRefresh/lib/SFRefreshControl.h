@@ -15,7 +15,7 @@
 
 - (void)willRefreshWithProgress:(CGFloat)progress; //在这里添加将要刷新的效果
 - (void)beginRefreshing; //在这里添加开始刷新的效果
-- (void)endRefreshing; //在这里添加结束刷新的效果
+- (NSTimeInterval)endRefreshing; //在这里添加结束刷新的效果，返回结束动画的时间
 
 @optional
 - (void)setControlColor:(UIColor *)controlColor; //设置颜色

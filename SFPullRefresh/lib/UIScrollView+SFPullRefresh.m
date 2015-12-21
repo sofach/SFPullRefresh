@@ -341,13 +341,14 @@ typedef enum {
     }
     UIEdgeInsets insets = self.orignInset;
     if (self.loadMoreControl) {
-        
+        NSTimeInterval interval = 0.25f;
+
         if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
-            [self.loadMoreControl endLoading];
+            interval = [self.loadMoreControl endLoading];
         }
         insets.bottom = self.scrollView.contentInset.bottom;
 
-        [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             [self setScrollViewContentInset:insets];
         } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
             if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
@@ -359,11 +360,12 @@ typedef enum {
         }];
     }
     if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
+        NSTimeInterval interval = 0.25f;
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
-            [self.refreshControl endRefreshing];
+            interval = [self.refreshControl endRefreshing];
         }
 
-        [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             [self setScrollViewContentInset:insets];
         } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
             if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
@@ -382,7 +384,7 @@ typedef enum {
             animateTime = 0.25;
         }
         [UIView animateWithDuration:animateTime animations:^{
-            [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
+            [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height-self.refreshControl.frame.size.height/2) animated:NO];
         } completion:^(BOOL finished) {
             [self tableViewDidEndDragging];
         }];
@@ -459,7 +461,6 @@ typedef enum {
 - (void)addObservers {
     [self.scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
     [self.scrollView addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:nil];
-
     [self.scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
     [self.scrollView.panGestureRecognizer addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
 }
@@ -512,15 +513,14 @@ typedef enum {
 
     if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing && self.loadMoreState != SFPullRefreshStateLoading) {
         
-        CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top;
+        CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top + self.refreshControl.frame.size.height/2;
         if (yMargin < 0 && yMargin > -self.refreshControl.frame.size.height){ //refreshControl partly appeared
             self.refreshState = SFPullRefreshStatePullToRefresh;
             if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
                 [self.refreshControl willRefreshWithProgress:fabs(yMargin)/self.refreshControl.frame.size.height];
             }
             
-        } else if (yMargin <= -self.refreshControl.frame.size.height && self.refreshState != SFPullRefreshStateReleaseToRefresh) {   //refreshControl totally appeard
-            
+        } else if (yMargin <= -self.refreshControl.frame.size.height) {   //refreshControl totally appeard
             self.refreshState = SFPullRefreshStateReleaseToRefresh;
             if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
                 [self.refreshControl willRefreshWithProgress:fabs(yMargin)/self.refreshControl.frame.size.height];

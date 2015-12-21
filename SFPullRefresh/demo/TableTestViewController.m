@@ -11,6 +11,7 @@
 #import "TestTableCell.h"
 #import "TableTestViewController.h"
 #import "CustomRefreshControl.h"
+#import "SFCircleRefreshControl.h"
 
 @interface TableTestViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -52,17 +53,19 @@ static NSString *cellId = @"cellId";
     [self.view addSubview:self.tableView];
 
 
+    SFCircleRefreshControl *circleRefreshControl = [[SFCircleRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)];
+    circleRefreshControl.circleWidth = 1;
+    [circleRefreshControl setControlColor:[UIColor redColor]];
     __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
     [self.tableView sf_addRefreshHandler:^{
         wkself.page=0;
         [wkself loadStrings];
-    } customRefreshControl:[[CustomRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)]];
+    } customRefreshControl:circleRefreshControl];
     
     [self.tableView sf_addLoadMoreHandler:^{
         NSLog(@"load more");
         [wkself loadStrings];
     }];
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -143,7 +146,7 @@ static NSString *cellId = @"cellId";
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        sleep(1.5);
+        sleep(2);
         NSMutableArray *arr = [NSMutableArray array];
         if (page<5) {
             for (int i=0; i<10; i++) {

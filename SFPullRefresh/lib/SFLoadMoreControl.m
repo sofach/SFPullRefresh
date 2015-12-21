@@ -83,13 +83,14 @@
     }];
 }
 
-- (void)endLoading {
+- (NSTimeInterval)endLoading {
     
     [_loadingLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
         
         [layer removeAllAnimations];
         layer.hidden = YES;
     }];
+    return 0.25;
 }
 
 - (void)reachEndWithText:(NSString *)text

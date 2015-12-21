@@ -119,7 +119,7 @@
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        sleep(1.5);
+        sleep(2);
         NSMutableArray *arr = [NSMutableArray array];
         if (page<5) {
             for (NSInteger i=0; i<10; i++) {

@@ -14,7 +14,7 @@
 @protocol SFLoadMoreControlDelegate <NSObject>
 
 - (void)beginLoading; //在这里添加开始加载更多的效果
-- (void)endLoading; //在这里添加结束加载更多的效果
+- (NSTimeInterval)endLoading; //在这里添加结束加载更多的效果
 - (void)reachEndWithText:(NSString *)text; //在这里添加数据加载完的效果
 
 @optional

@@ -18,6 +18,7 @@
 		AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A41B5550650034F8EA /* SFRefreshControl.m */; };
 		AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */; };
 		AD1410701B60B3040089AA30 /* SFPullRefresh.podspec in Resources */ = {isa = PBXBuildFile; fileRef = AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */; };
+		AD6403671C117637004836FC /* SFCircleRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AD6403661C117637004836FC /* SFCircleRefreshControl.m */; };
 		AD7D69791BA1514A006D9881 /* wx@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD7D69781BA1514A006D9881 /* wx@2x.png */; };
 		ADA047DB1B62819E00F61079 /* CollectionTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA047D21B62819E00F61079 /* CollectionTestViewController.m */; };
 		ADA047DC1B62819E00F61079 /* CustomRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = ADA047D51B62819E00F61079 /* CustomRefreshControl.m */; };
@@ -58,6 +59,8 @@
 		AD01A9A71B5561AF0034F8EA /* SFLoadMoreControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFLoadMoreControl.m; sourceTree = "<group>"; };
 		AD14106F1B60B3040089AA30 /* SFPullRefresh.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SFPullRefresh.podspec; sourceTree = "<group>"; };
 		AD3739BA1C0D402A009796A8 /* SFPullRefresh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFPullRefresh.h; sourceTree = "<group>"; };
+		AD6403651C117637004836FC /* SFCircleRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFCircleRefreshControl.h; sourceTree = "<group>"; };
+		AD6403661C117637004836FC /* SFCircleRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFCircleRefreshControl.m; sourceTree = "<group>"; };
 		AD7D69781BA1514A006D9881 /* wx@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wx@2x.png"; sourceTree = "<group>"; };
 		ADA047D11B62819E00F61079 /* CollectionTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionTestViewController.h; sourceTree = "<group>"; };
 		ADA047D21B62819E00F61079 /* CollectionTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionTestViewController.m; sourceTree = "<group>"; };
@@ -154,6 +157,7 @@
 		AD01A9871B550DC10034F8EA /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				AD6403641C11761E004836FC /* custom */,
 				AD01A9941B5510900034F8EA /* UIScrollView+SFPullRefresh.h */,
 				AD01A9951B5510900034F8EA /* UIScrollView+SFPullRefresh.m */,
 				AD01A9A31B5550650034F8EA /* SFRefreshControl.h */,
@@ -163,6 +167,15 @@
 				AD3739BA1C0D402A009796A8 /* SFPullRefresh.h */,
 			);
 			path = lib;
+			sourceTree = "<group>";
+		};
+		AD6403641C11761E004836FC /* custom */ = {
+			isa = PBXGroup;
+			children = (
+				AD6403651C117637004836FC /* SFCircleRefreshControl.h */,
+				AD6403661C117637004836FC /* SFCircleRefreshControl.m */,
+			);
+			path = custom;
 			sourceTree = "<group>";
 		};
 		ADA047D01B62819E00F61079 /* demo */ = {
@@ -297,6 +310,7 @@
 				ADA047DB1B62819E00F61079 /* CollectionTestViewController.m in Sources */,
 				AD01A9641B550D420034F8EA /* ViewController.m in Sources */,
 				AD01A9A51B5550650034F8EA /* SFRefreshControl.m in Sources */,
+				AD6403671C117637004836FC /* SFCircleRefreshControl.m in Sources */,
 				ADA047DC1B62819E00F61079 /* CustomRefreshControl.m in Sources */,
 				AD01A9A81B5561AF0034F8EA /* SFLoadMoreControl.m in Sources */,
 				AD01A9611B550D420034F8EA /* AppDelegate.m in Sources */,
