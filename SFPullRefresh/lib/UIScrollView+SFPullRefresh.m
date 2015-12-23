@@ -384,7 +384,7 @@ typedef enum {
             animateTime = 0.25;
         }
         [UIView animateWithDuration:animateTime animations:^{
-            [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height-self.refreshControl.frame.size.height/2) animated:NO];
+            [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
         } completion:^(BOOL finished) {
             [self tableViewDidEndDragging];
         }];
@@ -513,7 +513,7 @@ typedef enum {
 
     if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing && self.loadMoreState != SFPullRefreshStateLoading) {
         
-        CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top + self.refreshControl.frame.size.height/2;
+        CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top;
         if (yMargin < 0 && yMargin > -self.refreshControl.frame.size.height){ //refreshControl partly appeared
             self.refreshState = SFPullRefreshStatePullToRefresh;
             if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {

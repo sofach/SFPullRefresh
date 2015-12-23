@@ -66,11 +66,17 @@ static NSString *cellId = @"cellId";
         NSLog(@"load more");
         [wkself loadStrings];
     }];
+    [self.tableView sf_autoRefresh:NO];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.tableView sf_refreshAnimated:YES];
 }
 
 - (void)dealloc
