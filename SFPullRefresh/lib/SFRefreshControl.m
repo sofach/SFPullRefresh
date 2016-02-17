@@ -102,8 +102,6 @@
     _isRotating = NO;
     [_refreshContainer removeAllAnimations];
     [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-        [layer removeAllAnimations];
-
         CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
         opacityAnimation.fromValue = @(1);
         opacityAnimation.toValue = @(0);
@@ -116,7 +114,7 @@
 
 - (NSTimeInterval)endRefreshing {
     
-    NSTimeInterval interval = 1;
+    NSTimeInterval interval = 0.25;
     [CATransaction begin];
     [CATransaction setCompletionBlock:^{
         [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
@@ -126,33 +124,24 @@
     }];
     [_refreshContainer removeAllAnimations];
     [_refreshLayers enumerateObjectsUsingBlock:^(CALayer *layer, NSUInteger idx, BOOL *stop) {
-        [layer removeAllAnimations];
+        [layer removeAnimationForKey:@"opacity"];
         
-        CGFloat h = (self.frame.size.height*RefreshContainerRatio/2)*RefreshLayerRatio;
-        CABasicAnimation *sizeAnimation = [CABasicAnimation animationWithKeyPath:@"bounds.size"];
-        sizeAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(2, h)];
-        sizeAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(0.5, h/2)];
+        CABasicAnimation *sizeAnimation = [CABasicAnimation animationWithKeyPath:@"bounds.size.height"];
+        sizeAnimation.fromValue = [NSNumber numberWithFloat:(self.frame.size.height*RefreshContainerRatio/2)*RefreshLayerRatio];
+        sizeAnimation.toValue = [NSNumber numberWithFloat:2];
         sizeAnimation.duration = interval;
         sizeAnimation.repeatCount = 0;
-        sizeAnimation.removedOnCompletion = YES;
+        sizeAnimation.removedOnCompletion = NO;
         sizeAnimation.fillMode = kCAFillModeForwards;
         [layer addAnimation:sizeAnimation forKey:nil];
         
-        CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        opacityAnimation.fromValue = @(1);
-        opacityAnimation.toValue = @(0);
-        opacityAnimation.duration = 1;
-        opacityAnimation.repeatCount = INFINITY;
-        opacityAnimation.timeOffset = 1*(1 - idx*1.0/RefreshLayerCount);
-        [layer addAnimation:opacityAnimation forKey:@"opacity"];
-        
-//        CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-//        rotationAnimation.fromValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount];
-//        rotationAnimation.toValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount+M_PI/2];
-//        rotationAnimation.duration = interval;
-//        rotationAnimation.repeatCount = 0;
-//        rotationAnimation.removedOnCompletion = YES;
-//        [layer addAnimation:rotationAnimation forKey:nil];
+        CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+        rotationAnimation.fromValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount];
+        rotationAnimation.toValue = [NSNumber numberWithFloat:2*M_PI*idx/RefreshLayerCount+M_PI/2];
+        rotationAnimation.duration = interval;
+        rotationAnimation.repeatCount = 0;
+        rotationAnimation.removedOnCompletion = YES;
+        [layer addAnimation:rotationAnimation forKey:nil];
     }];
     
     [CATransaction commit];
