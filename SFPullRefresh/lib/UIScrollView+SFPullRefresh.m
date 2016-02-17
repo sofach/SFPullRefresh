@@ -360,7 +360,7 @@ typedef enum {
         }];
     }
     if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
-        NSTimeInterval interval = 0.25f;
+        NSTimeInterval interval = 1.f;
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
             interval = [self.refreshControl endRefreshing];
         }

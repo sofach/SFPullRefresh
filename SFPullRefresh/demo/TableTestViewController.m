@@ -62,10 +62,11 @@ static NSString *cellId = @"cellId";
         [wkself loadStrings];
     } customRefreshControl:circleRefreshControl];
     
+    SFLoadMoreControl *loadmoreControl = [[SFLoadMoreControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 110)];
     [self.tableView sf_addLoadMoreHandler:^{
         NSLog(@"load more");
         [wkself loadStrings];
-    }];
+    } customLoadMoreControl:loadmoreControl];
     [self.tableView sf_autoRefresh:NO];
 }
 

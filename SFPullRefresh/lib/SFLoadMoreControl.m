@@ -36,7 +36,9 @@
         
         _loadingLayers = [NSMutableArray array];
         CGFloat w = self.frame.size.height*7/16;
-        
+        if (w>25) {
+            w = 25;
+        }
         _loadingContainer = [[CALayer alloc] init];
         _loadingContainer.frame = CGRectMake(0, 0, w, w);
         _loadingContainer.position = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
