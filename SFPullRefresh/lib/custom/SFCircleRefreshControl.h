@@ -12,5 +12,7 @@
 @interface SFCircleRefreshControl : UIView <SFRefreshControlDelegate>
 
 @property (assign, nonatomic) CGFloat circleWidth;
+@property (assign, nonatomic) CGFloat maxProgress;
+@property (assign, nonatomic) CGFloat radius;
 
 @end

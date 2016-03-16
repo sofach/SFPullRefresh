@@ -386,6 +386,10 @@ typedef enum {
         [UIView animateWithDuration:animateTime animations:^{
             [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
         } completion:^(BOOL finished) {
+            self.refreshState = SFPullRefreshStateReleaseToRefresh;
+            if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
+                [self.refreshControl willRefreshWithProgress:1];
+            }
             [self tableViewDidEndDragging];
         }];
     }
@@ -514,16 +518,18 @@ typedef enum {
     if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing && self.loadMoreState != SFPullRefreshStateLoading) {
         
         CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top;
-        if (yMargin < 0 && yMargin > -self.refreshControl.frame.size.height){ //refreshControl partly appeared
+
+        CGFloat threshold = 1.5*self.refreshControl.frame.size.height;
+        if (yMargin < 0 && yMargin > -threshold){ //refreshControl partly appeared
             self.refreshState = SFPullRefreshStatePullToRefresh;
             if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
-                [self.refreshControl willRefreshWithProgress:fabs(yMargin)/self.refreshControl.frame.size.height];
+                [self.refreshControl willRefreshWithProgress:fabs(yMargin)/threshold];
             }
             
-        } else if (yMargin <= -self.refreshControl.frame.size.height) {   //refreshControl totally appeard
+        } else if (yMargin <= -threshold) {   //refreshControl totally appeard
             self.refreshState = SFPullRefreshStateReleaseToRefresh;
             if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
-                [self.refreshControl willRefreshWithProgress:fabs(yMargin)/self.refreshControl.frame.size.height];
+                [self.refreshControl willRefreshWithProgress:fabs(yMargin)/threshold];
             }
         }
     }

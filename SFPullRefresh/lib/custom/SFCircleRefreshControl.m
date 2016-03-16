@@ -8,8 +8,6 @@
 
 #import "SFCircleRefreshControl.h"
 
-#define MaxProgress 0.9f
-
 @interface SFCircleRefreshControl ()
 
 @property (strong, nonatomic) CAShapeLayer *progressLayer;
@@ -25,7 +23,7 @@
         _progressLayer = [CAShapeLayer layer];
         _progressLayer.strokeColor = [UIColor lightGrayColor].CGColor;
         _progressLayer.fillColor = nil;
-        _progressLayer.lineWidth = 2.0f;
+        _progressLayer.lineWidth = 1.0f;
     }
     return _progressLayer;
 }
@@ -34,23 +32,28 @@
     if (self = [super initWithFrame:frame]) {
         [self.layer addSublayer:self.progressLayer];
         
-        CGFloat w = frame.size.height*3/5;
-        [self.progressLayer setBounds:CGRectMake(0, 0, w, w)];
+        _radius = frame.size.height*2.0/5;
         self.progressLayer.position = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
-
-        CGFloat radius = CGRectGetHeight(self.progressLayer.bounds)/2 - self.progressLayer.lineWidth/2;
-        CGFloat startAngle = (CGFloat)(0);
-        CGFloat endAngle = (CGFloat)(2*M_PI);
-        UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(CGRectGetMidX(self.progressLayer.bounds), CGRectGetMidY(self.progressLayer.bounds)) radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
-        self.progressLayer.path = path.CGPath;
+        _maxProgress = 0.95;
+        [self resetProgressLayer];
         self.progressLayer.strokeStart = 0.f;
         self.progressLayer.strokeEnd = 0.f;
     }
     return self;
 }
 
+- (void)resetProgressLayer {
+    [self.progressLayer setBounds:CGRectMake(0, 0, _radius, _radius)];
+    CGFloat radius = CGRectGetHeight(self.progressLayer.bounds)/2 - self.progressLayer.lineWidth/2;
+    CGFloat startAngle = (CGFloat)(0);
+    CGFloat endAngle = (CGFloat)(2*M_PI);
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(CGRectGetMidX(self.progressLayer.bounds), CGRectGetMidY(self.progressLayer.bounds)) radius:radius startAngle:startAngle endAngle:endAngle clockwise:YES];
+    self.progressLayer.path = path.CGPath;
+}
+
 - (void)setCircleWidth:(CGFloat)circleWidth {
     _progressLayer.lineWidth = circleWidth;
+    [self resetProgressLayer];
 }
 
 - (void)setAnimating:(BOOL)animating {
@@ -77,7 +80,7 @@
 #pragma mark - SFRefreshControlDelegate
 - (void)willRefreshWithProgress:(CGFloat)progress {
 
-    if (progress>0 && progress<MaxProgress) {
+    if (progress>0 && progress<_maxProgress) {
         self.animating = NO;
         self.progressLayer.strokeStart = 0;
         self.progressLayer.strokeEnd = progress;
@@ -92,14 +95,13 @@
 - (void)beginRefreshing {
     self.animating = YES;
     self.progressLayer.strokeStart = 0;
-    self.progressLayer.strokeEnd = MaxProgress;
+    self.progressLayer.strokeEnd = _maxProgress;
 }
 
 - (NSTimeInterval)endRefreshing {
-    self.animating = NO;    
-    self.progressLayer.strokeEnd = 0.0;
-    self.progressLayer.strokeStart = 0.0;
-
+    self.animating = NO;
+    self.progressLayer.strokeStart = 0;
+    self.progressLayer.strokeEnd = 0;
     return 0.25f;
 }
 

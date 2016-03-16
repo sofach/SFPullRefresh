@@ -56,6 +56,7 @@ static NSString *cellId = @"cellId";
     SFCircleRefreshControl *circleRefreshControl = [[SFCircleRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)];
     circleRefreshControl.circleWidth = 1;
     [circleRefreshControl setControlColor:[UIColor redColor]];
+
     __weak TableTestViewController *wkself = self; //you must use wkself to break the retain cycle
     [self.tableView sf_addRefreshHandler:^{
         wkself.page=0;
@@ -67,7 +68,6 @@ static NSString *cellId = @"cellId";
         NSLog(@"load more");
         [wkself loadStrings];
     } customLoadMoreControl:loadmoreControl];
-    [self.tableView sf_autoRefresh:NO];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -77,7 +77,6 @@ static NSString *cellId = @"cellId";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.tableView sf_refreshAnimated:YES];
 }
 
 - (void)dealloc
