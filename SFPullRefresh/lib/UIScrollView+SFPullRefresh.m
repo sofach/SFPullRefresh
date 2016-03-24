@@ -93,7 +93,7 @@
 }
 
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl {
-
+    
     if (!customLoadMoreControl) {
         customLoadMoreControl = [[SFLoadMoreControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 50)];
     }
@@ -213,7 +213,7 @@ typedef enum {
     if (self) {
         _autoRefresh = YES;
         _orignInset.top = DefaultTop;
-
+        
     }
     return self;
 }
@@ -250,7 +250,7 @@ typedef enum {
 
 - (void)setOrignInset:(UIEdgeInsets)orignInset {
     _orignInset = orignInset;
-    if (_refreshControl) {
+    if (_refreshControl && !_isRefreshing) {
         if (self.autoRefresh) { //自动刷新
             [self refreshAnimated:YES];
         }
@@ -309,7 +309,7 @@ typedef enum {
 
 #pragma mark public method
 - (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void (^)(void))refreshHandler {
-
+    
     if (self.refreshControl) {
         [self.refreshControl removeFromSuperview];
     }
@@ -342,12 +342,12 @@ typedef enum {
     UIEdgeInsets insets = self.orignInset;
     if (self.loadMoreControl) {
         NSTimeInterval interval = 0.25f;
-
+        
         if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
             interval = [self.loadMoreControl endLoading];
         }
         insets.bottom = self.scrollView.contentInset.bottom;
-
+        
         [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             [self setScrollViewContentInset:insets];
         } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
@@ -364,7 +364,7 @@ typedef enum {
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
             interval = [self.refreshControl endRefreshing];
         }
-
+        
         [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             [self setScrollViewContentInset:insets];
         } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
@@ -379,6 +379,7 @@ typedef enum {
 
 - (void)refreshAnimated:(BOOL)animated {
     if (self.refreshControl) { //自动刷新
+        self.isRefreshing = YES;
         CGFloat animateTime = 0.0;
         if (animated) {
             animateTime = 0.25;
@@ -478,7 +479,7 @@ typedef enum {
 
 #define mark - kvo
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-
+    
     if (object == self.scrollView) {
         if ([keyPath isEqualToString:@"contentSize"] && self.loadMoreControl) {
             
@@ -488,7 +489,7 @@ typedef enum {
             if (preContentHeight == curContentHeight) {
                 return;
             }
-
+            
             if (self.loadMoreControl) { //底部加载更多，则需要每次加载完更新位置
                 
                 CGRect frame = self.loadMoreControl.frame;
@@ -514,11 +515,11 @@ typedef enum {
 }
 
 - (void)tableViewDidScroll {
-
+    
     if (self.refreshControl && self.refreshState != SFPullRefreshStateRefreshing && self.loadMoreState != SFPullRefreshStateLoading) {
         
         CGFloat yMargin = self.scrollView.contentOffset.y + self.orignInset.top;
-
+        
         CGFloat threshold = 1.5*self.refreshControl.frame.size.height;
         if (yMargin < 0 && yMargin > -threshold){ //refreshControl partly appeared
             self.refreshState = SFPullRefreshStatePullToRefresh;
@@ -554,13 +555,18 @@ typedef enum {
 - (void)tableViewDidEndDragging {
     if (self.refreshControl && self.refreshState == SFPullRefreshStateReleaseToRefresh && self.loadMoreState != SFPullRefreshStateLoading) {
         
-        [self beginRefresh];
-        
+        self.isRefreshing = YES;
+        self.refreshState = SFPullRefreshStateRefreshing;
+        self.loadMoreState = SFPullRefreshStateNormal;
+
         [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             UIEdgeInsets inset = self.scrollView.contentInset;
             inset.top = self.refreshControl.frame.size.height+self.orignInset.top;
             [self setScrollViewContentInset:inset];
-        } completion:nil];
+        } completion:^(BOOL completed) {
+            [self beginRefresh];
+        }];
+
     }
 }
 
