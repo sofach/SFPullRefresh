@@ -483,13 +483,6 @@ typedef enum {
     if (object == self.scrollView) {
         if ([keyPath isEqualToString:@"contentSize"] && self.loadMoreControl) {
             
-            CGFloat preContentHeight = [[change objectForKey:@"old"] CGSizeValue].height;
-            CGFloat curContentHeight = [[change objectForKey:@"new"] CGSizeValue].height;
-            
-            if (preContentHeight == curContentHeight) {
-                return;
-            }
-            
             if (self.loadMoreControl) { //底部加载更多，则需要每次加载完更新位置
                 
                 CGRect frame = self.loadMoreControl.frame;
