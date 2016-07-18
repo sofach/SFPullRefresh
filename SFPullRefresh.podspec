@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SFPullRefresh"
-  s.version      = "1.1.9"
+  s.version      = "1.2.0"
   s.summary      = "add simple pull refresh to UITableView or UICollectionView"
 
   s.description  = <<-DESC
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios
   s.platform     = :ios, "5.0"
 
-  s.source       = { :git => "https://github.com/sofach/SFPullRefresh.git", :tag => "1.1.9" }
+  s.source       = { :git => "https://github.com/sofach/SFPullRefresh.git", :tag => "1.2.0" }
 
 
   s.source_files  = "SFPullRefresh/lib/**/*.{h,m}"

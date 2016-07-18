@@ -365,12 +365,20 @@ typedef enum {
             interval = [self.refreshControl endRefreshing];
         }
         
-        [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            [self setScrollViewContentInset:insets];
-        } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+        if (![self.scrollView isKindOfClass:[UICollectionView class]]) {
             if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
                 [self.scrollView performSelector:@selector(reloadData)];
             }
+        }
+        [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            [self setScrollViewContentInset:insets];
+        } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+            if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
+                if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
+                    [self.scrollView performSelector:@selector(reloadData)];
+                }
+            }
+            
             self.refreshState = SFPullRefreshStateNormal; //必须在结束动画时改变状态，在此之前，contentoffset有可能会改变，比如reloaddata
             self.isRefreshing = NO;
         }];
