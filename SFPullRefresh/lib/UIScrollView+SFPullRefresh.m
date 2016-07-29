@@ -186,6 +186,7 @@ typedef enum {
 @interface SFPullRefreshController ()
 
 @property (assign, nonatomic) BOOL insetChanged;
+@property (assign, nonatomic) BOOL refreshAnimated;
 
 @property (assign, nonatomic) UIEdgeInsets orignInset;
 
@@ -360,7 +361,8 @@ typedef enum {
         }];
     }
     if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
-        NSTimeInterval interval = 0.25f;
+
+        NSTimeInterval interval = .25;
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
             interval = [self.refreshControl endRefreshing];
         }
@@ -370,37 +372,50 @@ typedef enum {
                 [self.scrollView performSelector:@selector(reloadData)];
             }
         }
-        [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            [self setScrollViewContentInset:insets];
-        } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+        
+        if (_refreshAnimated) {
+            [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                [self setScrollViewContentInset:insets];
+            } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+                if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
+                    if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
+                        [self.scrollView performSelector:@selector(reloadData)];
+                    }
+                }
+                self.refreshState = SFPullRefreshStateNormal; //必须在结束动画时改变状态，在此之前，contentoffset有可能会改变，比如reloaddata
+                self.isRefreshing = NO;
+            }];
+        } else {
             if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
                 if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
                     [self.scrollView performSelector:@selector(reloadData)];
                 }
             }
-            
-            self.refreshState = SFPullRefreshStateNormal; //必须在结束动画时改变状态，在此之前，contentoffset有可能会改变，比如reloaddata
+            self.refreshState = SFPullRefreshStateNormal;
             self.isRefreshing = NO;
-        }];
+        }
     }
 }
 
 - (void)refreshAnimated:(BOOL)animated {
     if (self.refreshControl) { //自动刷新
+        _refreshAnimated = animated;
         self.isRefreshing = YES;
-        CGFloat animateTime = 0.0;
         if (animated) {
-            animateTime = 0.25;
+            [UIView animateWithDuration:.25 animations:^{
+                [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
+            } completion:^(BOOL finished) {
+                self.refreshState = SFPullRefreshStateReleaseToRefresh;
+                if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
+                    [self.refreshControl willRefreshWithProgress:1];
+                }
+                [self tableViewDidEndDragging];
+            }];
+        } else {
+            self.refreshState = SFPullRefreshStateRefreshing;
+            self.loadMoreState = SFPullRefreshStateNormal;
+            [self beginRefresh];
         }
-        [UIView animateWithDuration:animateTime animations:^{
-            [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
-        } completion:^(BOOL finished) {
-            self.refreshState = SFPullRefreshStateReleaseToRefresh;
-            if ([self.refreshControl respondsToSelector:@selector(willRefreshWithProgress:)]) {
-                [self.refreshControl willRefreshWithProgress:1];
-            }
-            [self tableViewDidEndDragging];
-        }];
     }
 }
 

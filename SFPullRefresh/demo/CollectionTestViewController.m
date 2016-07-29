@@ -57,6 +57,11 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.collectionView sf_refreshAnimated:NO];
+}
+
 - (void)loadStrings
 {
     [self requestDataAtPage:self.page success:^(NSArray *strings) {

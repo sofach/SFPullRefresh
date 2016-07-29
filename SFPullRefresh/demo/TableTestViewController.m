@@ -77,6 +77,7 @@ static NSString *cellId = @"cellId";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [self.tableView sf_refreshAnimated:YES];
 }
 
 - (void)dealloc
