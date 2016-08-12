@@ -361,7 +361,7 @@ typedef enum {
         }];
     }
     if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
-
+        
         NSTimeInterval interval = .25;
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
             interval = [self.refreshControl endRefreshing];
@@ -398,9 +398,10 @@ typedef enum {
 }
 
 - (void)refreshAnimated:(BOOL)animated {
-    if (self.refreshControl) { //自动刷新
+    if (self.refreshControl && !self.isRefreshing) { //自动刷新
         _refreshAnimated = animated;
         self.isRefreshing = YES;
+        
         if (animated) {
             [UIView animateWithDuration:.25 animations:^{
                 [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
@@ -412,8 +413,6 @@ typedef enum {
                 [self tableViewDidEndDragging];
             }];
         } else {
-            self.refreshState = SFPullRefreshStateRefreshing;
-            self.loadMoreState = SFPullRefreshStateNormal;
             [self beginRefresh];
         }
     }
@@ -574,7 +573,7 @@ typedef enum {
         self.isRefreshing = YES;
         self.refreshState = SFPullRefreshStateRefreshing;
         self.loadMoreState = SFPullRefreshStateNormal;
-
+        
         [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             UIEdgeInsets inset = self.scrollView.contentInset;
             inset.top = self.refreshControl.frame.size.height+self.orignInset.top;
@@ -582,7 +581,7 @@ typedef enum {
         } completion:^(BOOL completed) {
             [self beginRefresh];
         }];
-
+        
     }
 }
 
