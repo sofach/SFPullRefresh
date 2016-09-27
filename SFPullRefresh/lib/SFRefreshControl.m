@@ -65,12 +65,13 @@
 #pragma mark - SFPullRefreshControlDelegate
 - (void)willRefreshWithProgress:(CGFloat)progress
 {
-    if (progress>0 && progress<1) {
+    if (progress>0.01 && progress<1) {
         _isRotating = NO;
         [_refreshContainer removeAllAnimations];
-    }
-    else
-    {
+    } else if (progress<=0.01) {
+        _isRotating = NO;
+        [_refreshContainer removeAllAnimations];
+    }  else {
         if (!_isRotating) {
             _isRotating = YES;
             [_refreshContainer removeAllAnimations];

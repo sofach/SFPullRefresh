@@ -80,10 +80,14 @@
 #pragma mark - SFRefreshControlDelegate
 - (void)willRefreshWithProgress:(CGFloat)progress {
 
-    if (progress>0 && progress<_maxProgress) {
+    if (progress>0.01 && progress<_maxProgress) {
         self.animating = NO;
         self.progressLayer.strokeStart = 0;
         self.progressLayer.strokeEnd = progress;
+    } else if (progress<=0.01) {
+        self.animating = NO;
+        self.progressLayer.strokeStart = 0;
+        self.progressLayer.strokeEnd = 0;
     } else {
         if (self.animating) {
             return;

@@ -43,7 +43,7 @@ static NSString *cellId = @"cellId";
     
     _items = [NSMutableArray array];
     _page = 0;
-    
+
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
