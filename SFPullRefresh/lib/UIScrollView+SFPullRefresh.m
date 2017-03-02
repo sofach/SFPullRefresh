@@ -26,7 +26,7 @@
 
 - (void)setScrollViewOrignInset:(UIEdgeInsets)orignInset;
 
-- (void)finishLoading;
+- (void)finishLoadingAnimated:(BOOL)animated;
 
 - (void)reachEndWithText:(NSString *)text;
 - (void)reachEndWithView:(UIView *)view;
@@ -109,8 +109,13 @@
 }
 
 - (void)sf_finishLoading {
-    [[self sf_getPullRefreshController] finishLoading];
+    [[self sf_getPullRefreshController] finishLoadingAnimated:YES];
 }
+
+- (void)sf_finishLoadingAnimated:(BOOL)animated {
+    [[self sf_getPullRefreshController] finishLoadingAnimated:animated];
+}
+
 
 - (void)sf_refreshAnimated:(BOOL)animated {
     [[self sf_getPullRefreshController] refreshAnimated:animated];
@@ -336,33 +341,47 @@ typedef enum {
     self.loadMoreControl.frame = frame;
 }
 
-- (void)finishLoading {
+- (void)finishLoadingAnimated:(BOOL)animated {
+
     if (_hintsView) {
         [_hintsView removeFromSuperview];
     }
     UIEdgeInsets insets = self.orignInset;
+    
+    NSTimeInterval interval = 0.25f;
+    
+    
     if (self.loadMoreControl) {
-        NSTimeInterval interval = 0.25f;
         
         if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
             interval = [self.loadMoreControl endLoading];
         }
         insets.bottom = self.scrollView.contentInset.bottom;
         
-        [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        if (animated) {
+            [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                [self setScrollViewContentInset:insets];
+            } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
+                if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
+                    [self.scrollView performSelector:@selector(reloadData)];
+                }
+                if (self.loadMoreState == SFPullRefreshStateLoading) { //因为有可能先调用reachend
+                    self.loadMoreState = SFPullRefreshStateNormal;
+                }
+            }];
+        } else {
             [self setScrollViewContentInset:insets];
-        } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
             if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
                 [self.scrollView performSelector:@selector(reloadData)];
             }
             if (self.loadMoreState == SFPullRefreshStateLoading) { //因为有可能先调用reachend
                 self.loadMoreState = SFPullRefreshStateNormal;
             }
-        }];
+        }
+        
     }
     if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
         
-        NSTimeInterval interval = .25;
         if ([self.refreshControl respondsToSelector:@selector(endRefreshing)]) {
             interval = [self.refreshControl endRefreshing];
         }
@@ -373,7 +392,7 @@ typedef enum {
             }
         }
         
-        if (_refreshAnimated) {
+        if (animated && _refreshAnimated) {
             [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
                 [self setScrollViewContentInset:insets];
             } completion:^(BOOL completion){ //collectionview在设置contentinsets动画的同时reloaddata会有点问题
@@ -391,6 +410,7 @@ typedef enum {
                     [self.scrollView performSelector:@selector(reloadData)];
                 }
             }
+            [self setScrollViewContentInset:insets];
             self.refreshState = SFPullRefreshStateNormal;
             self.isRefreshing = NO;
         }

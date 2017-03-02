@@ -54,6 +54,8 @@
  */
 - (void)sf_finishLoading;
 
+- (void)sf_finishLoadingAnimated:(BOOL)animated;
+
 /**
  *  刷新
  *
