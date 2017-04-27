@@ -77,7 +77,6 @@ static NSString *cellId = @"cellId";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.tableView sf_refreshAnimated:YES];
 }
 
 - (void)dealloc
@@ -153,7 +152,7 @@ static NSString *cellId = @"cellId";
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        sleep(2);
+        sleep(3);
         NSMutableArray *arr = [NSMutableArray array];
         if (page<5) {
             for (int i=0; i<10; i++) {

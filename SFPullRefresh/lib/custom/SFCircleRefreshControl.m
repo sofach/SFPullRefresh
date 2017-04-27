@@ -57,9 +57,7 @@
 }
 
 - (void)setAnimating:(BOOL)animating {
-    if ((!_animating) ^ animating) {
-        return;
-    }
+
     _animating = animating;
     if (_animating) {
         [self.progressLayer removeAllAnimations];

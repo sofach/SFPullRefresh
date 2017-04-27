@@ -15,6 +15,7 @@
 
 @property (assign, nonatomic) BOOL isRefreshing;
 @property (assign, nonatomic) BOOL autoRefresh;
+@property (assign, nonatomic) NSTimeInterval timeout;
 
 - (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void(^)(void))refreshHandler;
 
@@ -116,6 +117,9 @@
     [[self sf_getPullRefreshController] finishLoadingAnimated:animated];
 }
 
+- (void)sf_setLoadingTimeout:(NSTimeInterval)timeout {
+    [self sf_getPullRefreshController].timeout = timeout;
+}
 
 - (void)sf_refreshAnimated:(BOOL)animated {
     [[self sf_getPullRefreshController] refreshAnimated:animated];
@@ -157,7 +161,7 @@
 
 - (void)sf_willMoveToWindow:(UIWindow *)newWindow {
     [self sf_willMoveToWindow:newWindow];
-    if (self.sf_pullRefreshController) {
+    if (newWindow && self.sf_pullRefreshController) {
         [self.sf_pullRefreshController restartAnimation];
     }
 }
@@ -195,6 +199,8 @@ typedef enum {
 
 @property (assign, nonatomic) UIEdgeInsets orignInset;
 
+@property (strong, nonatomic) NSTimer *finishLoadingingTimer;
+
 @property (assign, nonatomic) SFPullRefreshState refreshState;
 @property (assign, nonatomic) SFPullRefreshState loadMoreState;
 
@@ -219,7 +225,7 @@ typedef enum {
     if (self) {
         _autoRefresh = YES;
         _orignInset.top = DefaultTop;
-        
+        _timeout = 10;
     }
     return self;
 }
@@ -272,6 +278,21 @@ typedef enum {
     return height;
 }
 
+- (void)setScrollViewContentInset:(UIEdgeInsets)inset {
+    self.insetChanged = YES;
+    self.scrollView.contentInset = inset;
+}
+
+- (void)startTimer {
+    [_finishLoadingingTimer invalidate];
+    _finishLoadingingTimer = [NSTimer scheduledTimerWithTimeInterval:_timeout target:self selector:@selector(didLoadingTimeout) userInfo:nil repeats:NO];
+}
+
+- (void)endTimer {
+    [_finishLoadingingTimer invalidate];
+    _finishLoadingingTimer = nil;
+}
+
 - (void)beginRefresh {
     self.isRefreshing = YES;
     self.refreshState = SFPullRefreshStateRefreshing;
@@ -283,11 +304,8 @@ typedef enum {
     if (self.refreshHandler) {
         self.refreshHandler();
     }
-}
-
-- (void)setScrollViewContentInset:(UIEdgeInsets)inset {
-    self.insetChanged = YES;
-    self.scrollView.contentInset = inset;
+    
+    [self startTimer];
 }
 
 - (void)beginLoadMore {
@@ -302,6 +320,8 @@ typedef enum {
     if (self.loadMoreHandler) {
         self.loadMoreHandler();
     }
+    
+    [self startTimer];
 }
 
 - (void)restartAnimation {
@@ -311,6 +331,10 @@ typedef enum {
     if (self.refreshControl && self.refreshState == SFPullRefreshStateRefreshing) {
         [self.refreshControl beginRefreshing];
     }
+}
+
+- (void)didLoadingTimeout {
+    [self finishLoadingAnimated:_refreshAnimated];
 }
 
 #pragma mark public method
@@ -343,6 +367,8 @@ typedef enum {
 
 - (void)finishLoadingAnimated:(BOOL)animated {
 
+    [self endTimer];
+    
     if (_hintsView) {
         [_hintsView removeFromSuperview];
     }
@@ -418,11 +444,15 @@ typedef enum {
 }
 
 - (void)refreshAnimated:(BOOL)animated {
+    if (self.loadMoreControl && self.loadMoreState==SFPullRefreshStateLoading) {
+        [self finishLoadingAnimated:YES];
+    }
     if (self.refreshControl && !self.isRefreshing) { //自动刷新
         _refreshAnimated = animated;
         self.isRefreshing = YES;
         
         if (animated) {
+            
             [UIView animateWithDuration:.25 animations:^{
                 [self.scrollView setContentOffset:CGPointMake(0, -self.orignInset.top-self.refreshControl.frame.size.height) animated:NO];
             } completion:^(BOOL finished) {

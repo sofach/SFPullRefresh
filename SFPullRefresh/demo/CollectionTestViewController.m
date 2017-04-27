@@ -59,7 +59,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.collectionView sf_refreshAnimated:NO];
+//    [self.collectionView sf_refreshAnimated:NO];
 }
 
 - (void)loadStrings

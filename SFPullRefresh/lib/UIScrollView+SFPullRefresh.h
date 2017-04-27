@@ -93,6 +93,8 @@
  */
 - (void)sf_autoRefresh:(BOOL)autoRefresh;
 
+- (void)sf_setLoadingTimeout:(NSTimeInterval)timeout;
+
 /**
  *  设置refreshControl和loadMoreControl的颜色
  *
