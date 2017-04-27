@@ -44,8 +44,6 @@
 
 /**
  *  是否正在刷新，可以用来判断是否该清空数据
- *
- *  @return
  */
 - (BOOL)sf_isRefreshing;
 
@@ -98,7 +96,7 @@
 /**
  *  设置refreshControl和loadMoreControl的颜色
  *
- *  @param tintColor 颜色
+ *  @param controlColor 颜色
  */
 - (void)sf_setControlColor:(UIColor *)controlColor;
 
