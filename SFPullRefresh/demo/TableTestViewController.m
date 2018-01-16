@@ -49,9 +49,16 @@ static NSString *cellId = @"cellId";
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.tableView registerNib:[UINib nibWithNibName:@"TestTableCell" bundle:nil] forCellReuseIdentifier:cellId];
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.tableView sf_autoRefresh:NO];
+    self.tableView.estimatedRowHeight = 0;
+    self.tableView.estimatedSectionFooterHeight = 0;
+    self.tableView.estimatedSectionHeaderHeight = 0;
+    self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 49, 0);
+    if ([self.tableView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+        [self.tableView performSelector:@selector(setContentInsetAdjustmentBehavior:) withObject:@0];
+    }
+    
     [self.view addSubview:self.tableView];
-
 
     SFCircleRefreshControl *circleRefreshControl = [[SFCircleRefreshControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 64)];
     circleRefreshControl.circleWidth = 1;
@@ -68,6 +75,8 @@ static NSString *cellId = @"cellId";
         NSLog(@"load more");
         [wkself loadStrings];
     } customLoadMoreControl:loadmoreControl];
+    
+    [self.tableView sf_refreshAnimated:NO];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -96,21 +105,21 @@ static NSString *cellId = @"cellId";
 //            [self.items insertObject:str atIndex:0]; //如果顶部加载，数据从头插入体验更好
             [self.items addObject:str];
         }
+        [self.tableView sf_finishLoading];
+
         self.page++;
         if (strings.count<10) {
             [self.tableView sf_reachEndWithText:@"加载完毕"];
         }
-        [self.tableView sf_finishLoading];
         if (self.items.count<=0) {
             self.hintsLabel.text = @"没有数据";
             [self.tableView sf_showHintsView:self.hintsLabel];
         }
     } failure:^(NSString *msg) {
-        [self.items removeAllObjects];
-        [self.tableView sf_finishLoading];
+        [self.tableView sf_finishLoadingWithResult:NO];
         //可以使用自定义的提示界面
-        self.hintsLabel.text = msg;
-        [self.tableView sf_showHintsView:self.hintsLabel];
+//        self.hintsLabel.text = msg;
+//        [self.tableView sf_showHintsView:self.hintsLabel];
     }];
 }
 
@@ -133,6 +142,10 @@ static NSString *cellId = @"cellId";
     return 85;
 }
 
+//- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    return 85.0;
+//}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     TestTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
@@ -152,9 +165,9 @@ static NSString *cellId = @"cellId";
 - (void)requestDataAtPage:(NSInteger)page success:(void(^)(NSArray *))success failure:(void(^)(NSString *))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        sleep(3);
+        sleep(1);
         NSMutableArray *arr = [NSMutableArray array];
-        if (page<5) {
+        if (page<3) {
             for (int i=0; i<10; i++) {
                 [arr addObject:[NSString stringWithFormat:@"this is row%ld", i+page*10]];
             }
@@ -167,12 +180,12 @@ static NSString *cellId = @"cellId";
         else
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-//                if (failure) {
-//                    failure(@"服务器错误！");
-//                }
-                if (success) {
-                    success(arr);
+                if (failure) {
+                    failure(@"服务器错误！");
                 }
+//                if (success) {
+//                    success(arr);
+//                }
             });
         }
         

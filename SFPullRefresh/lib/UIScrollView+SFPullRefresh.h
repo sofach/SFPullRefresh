@@ -43,6 +43,15 @@
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl;
 
 /**
+ *  添加加载更多功能
+ *
+ *  @param loadMoreHandler       加载更多的处理
+ *  @param customLoadMoreControl 自定义的loadMoreControl，传nil则使用默认效果
+ *  @param offsety               加载更多触发的offset，默认0
+ */
+- (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl loadMoreTriggerOffsetY:(CGFloat)offsety;
+
+/**
  *  是否正在刷新，可以用来判断是否该清空数据
  */
 - (BOOL)sf_isRefreshing;
@@ -53,6 +62,10 @@
 - (void)sf_finishLoading;
 
 - (void)sf_finishLoadingAnimated:(BOOL)animated;
+
+- (void)sf_finishLoadingWithResult:(BOOL)result;
+
+- (void)sf_finishLoadingAnimated:(BOOL)animated result:(BOOL)result;
 
 /**
  *  刷新

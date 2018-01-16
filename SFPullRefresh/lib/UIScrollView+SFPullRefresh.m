@@ -19,7 +19,7 @@
 
 - (void)setRefreshControl:(UIView<SFRefreshControlDelegate> *)refreshControl withRefreshHandler:(void(^)(void))refreshHandler;
 
-- (void)setLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)loadMoreControl withLoadMoreHandler:(void(^)(void))loadMoreHandler;
+- (void)setLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)loadMoreControl withLoadMoreHandler:(void (^)(void))loadMoreHandler loadMoreTriggerOffsetY:(CGFloat)offsety;
 
 - (void)refreshAnimated:(BOOL)animated;
 
@@ -27,7 +27,7 @@
 
 - (void)setScrollViewOrignInset:(UIEdgeInsets)orignInset;
 
-- (void)finishLoadingAnimated:(BOOL)animated;
+- (void)finishLoadingAnimated:(BOOL)animated result:(BOOL)result;
 
 - (void)reachEndWithText:(NSString *)text;
 - (void)reachEndWithView:(UIView *)view;
@@ -67,6 +67,17 @@
     if (!self.sf_pullRefreshController) {
         self.sf_pullRefreshController = [[SFPullRefreshController alloc] init];
         self.sf_pullRefreshController.scrollView = self;
+        //目前不支持self size
+        if ([self respondsToSelector:@selector(setEstimatedRowHeight:)]) {
+            [self performSelector:@selector(setEstimatedRowHeight:) withObject:@0];
+        }
+        if ([self respondsToSelector:@selector(setEstimatedSectionHeaderHeight:)]) {
+            [self performSelector:@selector(setEstimatedSectionHeaderHeight:) withObject:@0];
+        }
+        if ([self respondsToSelector:@selector(setEstimatedSectionFooterHeight:)]) {
+            [self performSelector:@selector(setEstimatedSectionFooterHeight:) withObject:@0];
+        }
+        
         if (self.superview) { //有时候scrollview movetosuperview调用过早
             [self.sf_pullRefreshController addObservers];
             [self.sf_getPullRefreshController setScrollViewOrignInset:self.contentInset];
@@ -95,10 +106,15 @@
 
 - (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl {
     
+    return [self sf_addLoadMoreHandler:loadMoreHandler customLoadMoreControl:customLoadMoreControl loadMoreTriggerOffsetY:0];
+}
+
+- (void)sf_addLoadMoreHandler:(void(^)(void))loadMoreHandler customLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)customLoadMoreControl loadMoreTriggerOffsetY:(CGFloat)offsety {
+    
     if (!customLoadMoreControl) {
         customLoadMoreControl = [[SFLoadMoreControl alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 50)];
     }
-    [[self sf_getPullRefreshController] setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler];
+    [[self sf_getPullRefreshController] setLoadMoreControl:customLoadMoreControl withLoadMoreHandler:loadMoreHandler loadMoreTriggerOffsetY:offsety];
 }
 
 - (BOOL)sf_isRefreshing {
@@ -110,11 +126,19 @@
 }
 
 - (void)sf_finishLoading {
-    [[self sf_getPullRefreshController] finishLoadingAnimated:YES];
+    [[self sf_getPullRefreshController] finishLoadingAnimated:YES result:YES];
 }
 
 - (void)sf_finishLoadingAnimated:(BOOL)animated {
-    [[self sf_getPullRefreshController] finishLoadingAnimated:animated];
+    [[self sf_getPullRefreshController] finishLoadingAnimated:animated result:YES];
+}
+
+- (void)sf_finishLoadingWithResult:(BOOL)result {
+    [[self sf_getPullRefreshController] finishLoadingAnimated:YES result:result];
+}
+
+- (void)sf_finishLoadingAnimated:(BOOL)animated result:(BOOL)result {
+    [[self sf_getPullRefreshController] finishLoadingAnimated:animated result:result];
 }
 
 - (void)sf_setLoadingTimeout:(NSTimeInterval)timeout {
@@ -196,6 +220,9 @@ typedef enum {
 
 @property (assign, nonatomic) BOOL insetChanged;
 @property (assign, nonatomic) BOOL refreshAnimated;
+
+@property (assign, nonatomic) CGFloat loadMoreTriggerOffsety;
+@property (assign, nonatomic) CGFloat originalLoadMoreTriggerOffsety;
 
 @property (assign, nonatomic) UIEdgeInsets orignInset;
 
@@ -334,7 +361,7 @@ typedef enum {
 }
 
 - (void)didLoadingTimeout {
-    [self finishLoadingAnimated:_refreshAnimated];
+    [self finishLoadingAnimated:_refreshAnimated result:NO];
 }
 
 #pragma mark public method
@@ -352,21 +379,23 @@ typedef enum {
     _refreshControl.frame = frame;
 }
 
-- (void)setLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)loadMoreControl withLoadMoreHandler:(void (^)(void))loadMoreHandler {
+- (void)setLoadMoreControl:(UIView<SFLoadMoreControlDelegate> *)loadMoreControl withLoadMoreHandler:(void (^)(void))loadMoreHandler loadMoreTriggerOffsetY:(CGFloat)offsety {
     if (self.loadMoreControl) {
         [self.loadMoreControl removeFromSuperview];
     }
     self.loadMoreControl = loadMoreControl;
     [self.scrollView addSubview:self.loadMoreControl];
     self.loadMoreHandler = loadMoreHandler;
+    self.originalLoadMoreTriggerOffsety = offsety;
+    self.loadMoreTriggerOffsety = offsety;
     
     CGRect frame = self.loadMoreControl.frame;
     frame.origin.y = self.scrollView.frame.size.height;
     self.loadMoreControl.frame = frame;
 }
 
-- (void)finishLoadingAnimated:(BOOL)animated {
-
+- (void)finishLoadingAnimated:(BOOL)animated result:(BOOL)result {
+    
     [self endTimer];
     
     if (_hintsView) {
@@ -376,13 +405,18 @@ typedef enum {
     
     NSTimeInterval interval = 0.25f;
     
+    self.loadMoreTriggerOffsety = result?self.originalLoadMoreTriggerOffsety:self.loadMoreControl.frame.size.height/2;
     
     if (self.loadMoreControl) {
         
         if ([self.loadMoreControl respondsToSelector:@selector(endLoading)]) {
             interval = [self.loadMoreControl endLoading];
         }
-        insets.bottom = self.scrollView.contentInset.bottom;
+        if (result) {
+            //成功的话则继续保持底部的contentInsets，这样动画过度效果好
+            insets.bottom = self.scrollView.contentInset.bottom;
+        }
+        //        insets.bottom = self.scrollView.contentInset.bottom;
         
         if (animated) {
             [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
@@ -445,7 +479,7 @@ typedef enum {
 
 - (void)refreshAnimated:(BOOL)animated {
     if (self.loadMoreControl && self.loadMoreState==SFPullRefreshStateLoading) {
-        [self finishLoadingAnimated:YES];
+        [self finishLoadingAnimated:YES result:YES];
     }
     if (self.refreshControl && !self.isRefreshing) { //自动刷新
         _refreshAnimated = animated;
@@ -603,9 +637,9 @@ typedef enum {
     if (self.loadMoreControl && self.loadMoreState == SFPullRefreshStateNormal && self.refreshState != SFPullRefreshStateRefreshing) {
         
         CGFloat contentHeight = [self scrollViewContentHeight];
-        CGFloat yMargin = self.scrollView.contentOffset.y + self.scrollView.frame.size.height - contentHeight - self.orignInset.bottom;
+        CGFloat yMargin = self.scrollView.contentOffset.y + self.scrollView.frame.size.height - contentHeight - self.scrollView.contentInset.bottom;
         
-        if ( yMargin > 0) {  //footer will appeared
+        if ( yMargin > self.loadMoreTriggerOffsety) {  //footer will appeared
             
             [self beginLoadMore];
             
@@ -623,7 +657,7 @@ typedef enum {
         self.isRefreshing = YES;
         self.refreshState = SFPullRefreshStateRefreshing;
         self.loadMoreState = SFPullRefreshStateNormal;
-        
+        self.refreshAnimated = YES;
         [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             UIEdgeInsets inset = self.scrollView.contentInset;
             inset.top = self.refreshControl.frame.size.height+self.orignInset.top;
@@ -636,3 +670,4 @@ typedef enum {
 }
 
 @end
+
