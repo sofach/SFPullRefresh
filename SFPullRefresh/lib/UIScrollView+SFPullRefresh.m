@@ -67,16 +67,6 @@
     if (!self.sf_pullRefreshController) {
         self.sf_pullRefreshController = [[SFPullRefreshController alloc] init];
         self.sf_pullRefreshController.scrollView = self;
-        //目前不支持self size
-        if ([self respondsToSelector:@selector(setEstimatedRowHeight:)]) {
-            [self performSelector:@selector(setEstimatedRowHeight:) withObject:@0];
-        }
-        if ([self respondsToSelector:@selector(setEstimatedSectionHeaderHeight:)]) {
-            [self performSelector:@selector(setEstimatedSectionHeaderHeight:) withObject:@0];
-        }
-        if ([self respondsToSelector:@selector(setEstimatedSectionFooterHeight:)]) {
-            [self performSelector:@selector(setEstimatedSectionFooterHeight:) withObject:@0];
-        }
         
         if (self.superview) { //有时候scrollview movetosuperview调用过早
             [self.sf_pullRefreshController addObservers];
