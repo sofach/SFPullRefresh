@@ -408,6 +408,9 @@ typedef enum {
         }
         //        insets.bottom = self.scrollView.contentInset.bottom;
         
+        if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
+            [self.scrollView performSelector:@selector(reloadData)];
+        }
         if (animated) {
             [UIView animateWithDuration:interval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
                 [self setScrollViewContentInset:insets];
@@ -421,9 +424,6 @@ typedef enum {
             }];
         } else {
             [self setScrollViewContentInset:insets];
-            if ([self.scrollView respondsToSelector:@selector(reloadData)]) {
-                [self.scrollView performSelector:@selector(reloadData)];
-            }
             if (self.loadMoreState == SFPullRefreshStateLoading) { //因为有可能先调用reachend
                 self.loadMoreState = SFPullRefreshStateNormal;
             }

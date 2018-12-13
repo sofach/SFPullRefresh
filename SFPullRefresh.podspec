@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SFPullRefresh"
-  s.version      = "1.2.9"
+  s.version      = "1.2.10"
   s.summary      = "add simple pull refresh to UITableView or UICollectionView"
 
   s.description  = <<-DESC
