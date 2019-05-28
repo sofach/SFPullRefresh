@@ -351,6 +351,9 @@ typedef enum {
 }
 
 - (void)didLoadingTimeout {
+    if (self.loadMoreState != SFPullRefreshStateLoading || self.refreshState != SFPullRefreshStateRefreshing) {
+        return;
+    }
     [self finishLoadingAnimated:_refreshAnimated result:NO];
 }
 
