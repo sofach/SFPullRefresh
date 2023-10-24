@@ -49,7 +49,6 @@
             layer.frame = CGRectMake(0, 0, 2, (w/2)*RefreshLayerRatio);
             layer.anchorPoint = CGPointMake(0.5, 1+(1-RefreshLayerRatio)/RefreshLayerRatio);
             layer.position = CGPointMake(w/2, w/2);
-            layer.allowsEdgeAntialiasing = YES;
             layer.cornerRadius = 1.0f;
             layer.hidden = YES;
             layer.transform = CATransform3DMakeRotation(2*M_PI*i/RefreshLayerCount, 0, 0, 1);
